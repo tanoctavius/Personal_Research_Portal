@@ -1,6 +1,3 @@
-Here is the clean, standard `README.md` file without emojis.
-
-```markdown
 # Personal Research Portal (Local RAG)
 
 Iteration 1:
