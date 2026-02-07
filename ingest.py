@@ -1,56 +1,99 @@
+# DONT RUN THIS FILE, ALREADY RAN TO GIVE vectorstore_llama
+
 import os
-import pandas as pd
-from dotenv import load_dotenv
-from langchain_community.document_loaders import PyPDFLoader
+import csv
+from langchain_community.document_loaders import TextLoader, PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_openai import OpenAIEmbeddings
+from langchain_community.embeddings import OllamaEmbeddings
 from langchain_community.vectorstores import FAISS
 
-load_dotenv()
-
 MANIFEST_PATH = "data/data_manifest.csv"
-INDEX_PATH = "data/vectorstore"
-CHUNK_SIZE = 1000
-CHUNK_OVERLAP = 200
+INDEX_PATH = "data/vectorstore_llama"
 
-def ingest():
-    print("starting ingestion")
+def load_clean_manifest():
+    if not os.path.exists(MANIFEST_PATH):
+        print(f"error: manifest not found at {MANIFEST_PATH}")
+        return []
+
+    clean_data = []
+    with open(MANIFEST_PATH, 'r', encoding='utf-8-sig') as f: 
+        reader = csv.DictReader(f, skipinitialspace=True)
+        
+        reader.fieldnames = [k.strip() for k in reader.fieldnames]
+        
+        for row in reader:
+            clean_row = {k: v.strip() for k, v in row.items() if k is not None}
+            clean_data.append(clean_row)
+            
+    return clean_data
+
+def create_vector_db():
+    manifest = load_clean_manifest()
+    if not manifest:
+        return
+
+    print(f"manifest loaded: {len(manifest)} entries found.")
     
-    df = pd.read_csv(MANIFEST_PATH)
     all_docs = []
 
-    for _, row in df.iterrows():
-        path = row['raw_path']
-        if not os.path.exists(path):
-            print(f"file not found: {path}")
+    for entry in manifest:
+        source_id = entry.get('source_id')
+        file_path = entry.get('raw_path')
+        
+        if not source_id:
             continue
             
-        print(f"processing: {row['source_id']}")
+        if not file_path:
+            print(f"skipping {source_id}: no file path in csv")
+            continue
+            
+        file_path = os.path.normpath(file_path)
         
-        loader = PyPDFLoader(path)
-        raw_docs = loader.load()
-        
-        for doc in raw_docs:
-            doc.metadata['source_id'] = row['source_id']
-            doc.metadata['title'] = row['title']
-    
-        text_splitter = RecursiveCharacterTextSplitter(
-            chunk_size=CHUNK_SIZE, 
-            chunk_overlap=CHUNK_OVERLAP
-        )
-        split_docs = text_splitter.split_documents(raw_docs)
-        
-        for i, doc in enumerate(split_docs):
-            doc.metadata['chunk_id'] = i
-            all_docs.append(doc)
+        if not os.path.exists(file_path):
+            print(f"skipping {source_id}: file not found at '{file_path}'")
+            continue
 
-    print(f"total chunks created: {len(all_docs)}")
+        try:
+            # curr we only have pdf, need to add another func if include others
+            if file_path.lower().endswith('.pdf'):
+                loader = PyPDFLoader(file_path)
+            else:
+                loader = TextLoader(file_path, encoding='utf-8')
+            
+            loaded_docs = loader.load()
+            
+            for doc in loaded_docs:
+                doc.metadata['source_id'] = source_id
+                doc.metadata['title'] = entry.get('title', 'Unknown Title')
+                doc.metadata['authors'] = entry.get('authors', 'Unknown Authors')
+                doc.metadata['year'] = entry.get('year', 'n.d.')
+                doc.metadata['url'] = entry.get('link/ DOI', '')
+                
+            all_docs.extend(loaded_docs)
+            print(f"loaded: {source_id}")
+            
+        except Exception as e:
+            print(f"failed to load {source_id}: {e}")
 
-    embeddings = OpenAIEmbeddings()
-    vectorstore = FAISS.from_documents(all_docs, embeddings)
+    if not all_docs:
+        print("no documents were successfully loaded rip.")
+        return
+
+    print(f"\nprocessing {len(all_docs)} total pages...")
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+    splits = text_splitter.split_documents(all_docs)
     
+    print(f"created {len(splits)} vector chunks.")
+    print("initializing embeddings (nomic-embed-text)...")
+    embeddings = OllamaEmbeddings(model="nomic-embed-text")
+
+    print("building vector store...")
+    vectorstore = FAISS.from_documents(documents=splits, embedding=embeddings)
+
+    print(f"saving index to {INDEX_PATH}...")
     vectorstore.save_local(INDEX_PATH)
-    print("index saved to disk!")
+    print("ingestion complete!")
 
-if __name__ == "__main__":
-    ingest()
+# COMMENTED OUT TO NOT RUN
+# if __name__ == "__main__":
+#     create_vector_db()

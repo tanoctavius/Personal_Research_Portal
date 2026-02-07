@@ -1,0 +1,9 @@
+timestamp,query,retrieved_sources,answer
+2026-02-07 17:01:23.260053,how are emojis used in llms,"['Guntuku2019', 'Guntuku2019', 'Guntuku2019', 'Guntuku2019', 'Guntuku2019', 'Peng2023', 'Peng2023']","Based on the provided context, I can answer your question.
+
+According to the paper ""EmojiLM: Modeling the New Emoji Language"" by Letian Peng et al. (2023), emojis are used in language models (LLMs) as a way to express complex semantics and emotions in a more vivid and witty manner. The authors propose a new type of LLM, called EmojiLM, which is specialized in bidirectional English-Emoji translation.
+
+In this context, emojis are not just used as substitutes for emotion words (e.g., happy, sad, angry), but rather as a way to perform a similar role as natural language when composing sentences with multiple emojis. The authors also mention that existing studies have focused on single emoji predictions, which they argue underestimates the expressing ability of emojis.
+
+In summary, emojis are used in LLMs to enhance the expressiveness and emotional nuance of text-based communication, allowing for more vivid and witty expressions of complex semantics and emotions."
+2026-02-07 17:04:08.734636,what are emojis in llms,"['Jiang2026', 'Klein2024', 'Jiang2026', 'Jiang2026', 'Lin2025', 'Jiang2026']","According to the provided context, specifically from Source ID: Jiang2026, ""Small Symbols, Big Risks: Exploring Emoticon Semantic Confusion in Large Language Models"" (Author: Weipeng Jiang, Xiaoyu Zhang, Juan Zhai, Shiqing Ma, Chao Shen, Yang Liu, Year: 2026), emojis in LLMs refer to emoticons, which are constructed from standard alphanumeric characters and punctuation (e.g., ‘:-)’, ‘~’, ‘>’)."
