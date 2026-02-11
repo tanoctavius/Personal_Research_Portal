@@ -33,7 +33,7 @@ pip install -r requirements.txt
 
 ### 3. Pull the AI Models
 
-Open your terminal and run these commands to download Llama 3 and the embedding model required for the vector database:
+Open your terminal and run these commands to download Deepseek and the embedding model required for the vector database:
 
 ```bash
 ollama pull deepseek-r1
