@@ -32,6 +32,14 @@ def get_resources():
 
 retriever, llm = get_resources()
 
+def parse_deepseek_output(text):
+    think_match = re.search(r'<think>(.*?)</think>', text, flags=re.DOTALL)
+    if think_match:
+        thought = think_match.group(1).strip()
+        answer = re.sub(r'<think>.*?</think>', '', text, flags=re.DOTALL).strip()
+        return thought, answer
+    else:
+        return None, text.strip()
 
 def clean_deepseek_think(text):
     return re.sub(r'<think>.*?</think>', '', text, flags=re.DOTALL).strip()
@@ -68,10 +76,8 @@ def run_rag(user_query):
     for q in search_queries:
         docs = retriever.invoke(q)
         for doc in docs:
-
             source_id = doc.metadata.get('source_id', 'unknown')
-            chunk_id = doc.metadata.get('chunk_id', hash(doc.page_content) % 10000)
-            
+            chunk_id = doc.metadata.get('chunk_id', '0')
             key = (source_id, chunk_id)
             unique_docs[key] = doc
     
@@ -80,23 +86,24 @@ def run_rag(user_query):
     context_text = ""
     for doc in retrieved_docs:
         s_id = doc.metadata.get('source_id', 'unknown')
-        c_id = doc.metadata.get('chunk_id', hash(doc.page_content) % 10000)
+        c_id = doc.metadata.get('chunk_id', '0')
+        cit_fmt = doc.metadata.get('in_text_citation', f"({s_id})")
         
-        in_text_cit = doc.metadata.get('in_text_citation', f"({s_id})")
-        
-        context_text += f"Source ID: {s_id}\nChunk ID: {c_id}\nCitation Format: {in_text_cit}\nContent: {doc.page_content}\n---\n"
+        context_text += f"[source_id: {s_id}, chunk_id: {c_id}, citation_ref: {cit_fmt}]\n{doc.page_content}\n\n"
 
-    system_prompt = """You are a rigorous research assistant. 
-    Answer the user's question using ONLY the provided context.
-    
-    RULES:
-    1. Every claim must be immediately followed by a citation.
-    2. THE CITATION FORMAT MUST BE EXACTLY: (SourceID; Chunk ID; Citation Format)
-        Example: (Chen2024; Chunk 12; (Chen et al., 2024))
-    3. Use the 'Citation Format' provided in the context for the third part of the citation.
-    4. If the context does not support the claim, DO NOT invent information.
-    5. Keep answers concise and direct.
-    """
+    system_prompt = """You are a research assistant. Answer the question using ONLY the provided context.
+
+CRITICAL CITATION RULES:
+1. Every single sentence you write must end with a citation.
+2. The citation MUST follow this exact format: (SourceID; Chunk ChunkID; CitationRef)
+3. Do not create your own citations. Copy the 'citation_ref' from the context block exactly.
+
+EXAMPLE:
+Context: [source_id: Chen2024, chunk_id: 12, citation_ref: (Chen et al., 2024)] Emojis reduce ambiguity.
+Output: Emojis help reduce ambiguity in communication (Chen2024; Chunk 12; (Chen et al., 2024)).
+
+If the context does not support the answer, state that you cannot find evidence.
+"""
     
     final_prompt = ChatPromptTemplate.from_messages([
         ("system", system_prompt),
@@ -107,9 +114,13 @@ def run_rag(user_query):
     print("generating answer...")
     response = chain.invoke({"context": context_text, "question": user_query})
     
-    final_answer = response.content
-    if not config["show_thinking"]:
-        final_answer = clean_deepseek_think(final_answer)
+    raw_output = response.content
+    thought, final_answer = parse_deepseek_output(raw_output)
+    
+    if config["show_thinking"] and thought:
+        print("\n" + "="*20 + " REASONING " + "="*20)
+        print(thought)
+        print("="*51 + "\n")
     
     source_list = [d.metadata.get('source_id') for d in retrieved_docs]
     log_interaction(user_query, source_list, final_answer)
@@ -121,7 +132,8 @@ if __name__ == "__main__":
     print("commands: 'quit' to exit, 'toggle think' to show/hide reasoning")
     
     while True:
-        q = input("\nask a research question: ")
+        q = input("\nask a research question: ").strip()
+        
         if q.lower() in ['quit', 'exit']: 
             break
         
@@ -130,7 +142,9 @@ if __name__ == "__main__":
             print(f"show thinking set to: {config['show_thinking']}")
             continue
         
+        if not q: continue 
+        
         answer = run_rag(q)
-        print("\nanswer:\n")
+        print("ANSWER:\n")
         print(answer)
         print("\n" + "-"*50)
