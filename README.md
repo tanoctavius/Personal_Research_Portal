@@ -36,7 +36,7 @@ pip install -r requirements.txt
 Open your terminal and run these commands to download Llama 3 and the embedding model required for the vector database:
 
 ```bash
-ollama pull llama3
+ollama pull deepseek-r1
 ollama pull nomic-embed-text
 
 ```
@@ -54,8 +54,8 @@ Open `data/data_manifest.csv`. You must add a row for each new file you add to t
 **CSV Format:**
 
 ```csv
-source_id, title, authors, year, type, link/ DOI, raw_path
-Zhang2025, "Paper Title", "Zhang, Y.", 2025, Paper, [https://arxiv.org/](https://arxiv.org/)..., data/raw/Zhang2025.pdf
+source_id, title, authors, year, type, link/ DOI, raw_path, relevance, in_text_citation
+Zhang2025, "Emoti-Attack", "Zhang, Y.", 2025, Paper, [https://arxiv.org/](https://arxiv.org/)..., data/raw/Zhang2025.pdf, "Relevance note...", "(Zhang, 2025)"
 
 ```
 
@@ -81,21 +81,36 @@ python rag_pipeline.py
 
 1. Wait for the prompt `research portal phase 2...` to appear.
 2. Type your question (e.g., "What does Zhang say about emoji attacks?").
-3. The AI will answer and provide citations in the format `(Author, Year)`.
-4. Type `quit` or `exit` to close the program.
+3. The AI will answer and provide citations in the format `(Paper, Chunk, In_text_citation)`.
+4. Toggle Reasoning: Type `toggle think` to show/hide DeepSeek's internal thought process.
+5. Type `quit` or `exit` to close the program.
+
+## Evaluation
+
+To automatically test the system against 20 pre-defined queries (Direct, Synthesis, and Edge Cases):
+
+```bash
+python evaluate.py
+
+```
+
+Results will be saved to logs/evaluation_results.csv.
 
 ## Project Structure
 
 ```text
 .
 ├── data/
-│   ├── raw/               # Directory for input PDFs and TXT files
-│   ├── vectorstore_llama/ # Vector database created by ingest.py
-│   └── data_manifest.csv  # Metadata mapping for your files
-├── logs/                  # Stores a CSV log of chat history
-├── ingest.py              # Script to build the vector database
-├── rag_pipeline.py        # Main script for the chat interface
-├── requirements.txt       # List of Python dependencies
+│   ├── raw/                  # PDFs go here
+│   ├── vectorstore_llama/    # FAISS vector database (created by ingest.py)
+│   └── data_manifest.csv     # Metadata + Citation format mapping
+├── logs/
+│   ├── rag_logs.csv          # History of all chat interactions
+│   └── evaluation_results.csv # Results from the eval script
+├── ingest.py                 # Builds DB (Extracts text -> Chunk IDs -> Embeddings)
+├── rag_pipeline.py           # Main Chat App (DeepSeek + Query Expansion)
+├── evaluate.py               # Automated testing script
+├── requirements.txt          # Python dependencies
 └── README.md
 
 ```
