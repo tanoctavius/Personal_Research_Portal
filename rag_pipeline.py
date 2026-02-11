@@ -1,32 +1,64 @@
 import os
 import datetime
 import csv
-from dotenv import load_dotenv
-from langchain_ollama import ChatOllama, OllamaEmbeddings
+import re
 from langchain_community.vectorstores import FAISS
-from langchain_core.prompts import ChatPromptTemplate
+from langchain_ollama import ChatOllama, OllamaEmbeddings
+from langchain_core.prompts import ChatPromptTemplate # <--- This is the fix
 
-load_dotenv()
+# --- Configuration ---
+index_path = "data/vectorstore_llama"
+log_file = "logs/rag_logs.csv"
+llm_model = "deepseek-r1"
+embedding_model = "nomic-embed-text"
 
-INDEX_PATH = "data/vectorstore_llama"
-LOG_FILE = "logs/rag_logs.csv"
-MODEL_NAME = "llama3"
+config = {"show_thinking": True}
 
-embeddings = OllamaEmbeddings(model="nomic-embed-text")
-vectorstore = FAISS.load_local(INDEX_PATH, embeddings, allow_dangerous_deserialization=True)
-retriever = vectorstore.as_retriever(search_kwargs={"k": 5})
-llm = ChatOllama(model=MODEL_NAME, temperature=0)
+def get_resources():
+    print("loading models...")
+    embeddings = OllamaEmbeddings(model=embedding_model)
+    
+    if not os.path.exists(index_path):
+        print(f"error: index not found at {index_path}. run ingest first.")
+        exit()
+
+    try:
+        vectorstore = FAISS.load_local(index_path, embeddings, allow_dangerous_deserialization=True)
+        retriever = vectorstore.as_retriever(search_kwargs={"k": 5})
+        llm = ChatOllama(model=llm_model, temperature=0)
+        return retriever, llm
+    except Exception as e:
+        print(f"error loading resources: {e}")
+        exit()
+
+retriever, llm = get_resources()
+
+def clean_deepseek_think(text):
+    return re.sub(r'<think>.*?</think>', '', text, flags=re.DOTALL).strip()
 
 def expand_query(original_query):
-    expansion_prompt = ChatPromptTemplate.from_template(
-        "You are a research assistant. Generate 3 variations of this search query "
-        "to improve retrieval from a technical vector database. "
-        "Output only the questions separated by newlines.\nQuery: {query}"
-    )
-    chain = expansion_prompt | llm
+    template = """Generate 3 specific search queries to find evidence for this question. Output ONLY the queries, one per line.
+    Question: {query}"""
+    
+    prompt = ChatPromptTemplate.from_template(template)
+    chain = prompt | llm
     response = chain.invoke({"query": original_query})
-    queries = response.content.split('\n')
-    return [q.strip() for q in queries if q.strip()] + [original_query]
+    
+    content = clean_deepseek_think(response.content)
+    
+    queries = content.split('\n')
+    clean_queries = [q.strip() for q in queries if q.strip()]
+    return clean_queries[:3] + [original_query]
+
+def log_interaction(query, sources, answer):
+    os.makedirs("logs", exist_ok=True)
+    file_exists = os.path.isfile(log_file)
+    
+    with open(log_file, 'a', newline='', encoding='utf-8') as f:
+        writer = csv.writer(f)
+        if not file_exists:
+            writer.writerow(["timestamp", "query", "retrieved_sources", "answer"])
+        writer.writerow([datetime.datetime.now(), query, str(sources), answer])
 
 def run_rag(user_query):
     search_queries = expand_query(user_query)
@@ -36,7 +68,10 @@ def run_rag(user_query):
     for q in search_queries:
         docs = retriever.invoke(q)
         for doc in docs:
-            key = (doc.metadata.get('source_id'), doc.page_content[:20])
+            source_id = doc.metadata.get('source_id', 'unknown')
+            chunk_id = doc.metadata.get('chunk_id', hash(doc.page_content) % 10000)
+            
+            key = (source_id, chunk_id)
             unique_docs[key] = doc
     
     retrieved_docs = list(unique_docs.values())[:7]
@@ -44,22 +79,17 @@ def run_rag(user_query):
     context_text = ""
     for doc in retrieved_docs:
         meta = doc.metadata
-        context_text += (
-            f"Source ID: {meta.get('source_id')}\n"
-            f"Title: {meta.get('title', 'Unknown')}\n"
-            f"Author: {meta.get('authors', 'Unknown')}\n"
-            f"Year: {meta.get('year', 'n.d.')}\n"
-            f"Content: {doc.page_content}\n"
-            f"---\n"
-        )
+        s_id = meta.get('source_id', 'unknown')
+        c_id = meta.get('chunk_id', hash(doc.page_content) % 10000)
+        context_text += f"Source: {s_id} (Chunk {c_id})\nContent: {doc.page_content}\n---\n"
 
     system_prompt = """You are a rigorous research assistant. 
     Answer the user's question using ONLY the provided context.
     
     RULES:
-    1. Cite your sources using the format: (Author, Year).
+    1. Every claim must be immediately followed by a citation in format (SourceID, ChunkID).
     2. If the context does not support the claim, DO NOT invent information. Say "I cannot find evidence for this."
-    3. Do not use outside knowledge.
+    3. Keep answers concise and direct.
     """
     
     final_prompt = ChatPromptTemplate.from_messages([
@@ -68,32 +98,33 @@ def run_rag(user_query):
     ])
     
     chain = final_prompt | llm
+    print("generating answer...")
     response = chain.invoke({"context": context_text, "question": user_query})
     
-    log_interaction(user_query, [d.metadata.get('source_id') for d in retrieved_docs], response.content)
+    final_answer = response.content
+    if not config["show_thinking"]:
+        final_answer = clean_deepseek_think(final_answer)
     
-    return response.content
-
-def log_interaction(query, sources, answer):
-    os.makedirs("logs", exist_ok=True)
-    file_exists = os.path.isfile(LOG_FILE)
-    with open(LOG_FILE, 'a', newline='', encoding='utf-8') as f:
-        writer = csv.writer(f)
-        if not file_exists:
-            writer.writerow(["timestamp", "query", "retrieved_sources", "answer"])
-        writer.writerow([datetime.datetime.now(), query, str(sources), answer])
+    source_list = [d.metadata.get('source_id') for d in retrieved_docs]
+    log_interaction(user_query, source_list, final_answer)
+    
+    return final_answer
 
 if __name__ == "__main__":
-    print("research portal phase 2 (local llama + query expansion)")
+    print(f"research portal phase 2 initialized ({llm_model})")
+    print("commands: 'quit' to exit, 'toggle think' to show/hide reasoning")
+    
     while True:
-        q = input("\nask a research question (or 'quit'): ")
-        if q.lower() in ['quit', 'exit']: break
+        q = input("\nask a research question: ")
+        if q.lower() in ['quit', 'exit']: 
+            break
         
-        try:
-            answer = run_rag(q)
-            print("\nanswer:\n")
-            print(answer)
-        except Exception as e:
-            print(f"error: {e}")
+        if q.lower() == 'toggle think':
+            config["show_thinking"] = not config["show_thinking"]
+            print(f"show thinking set to: {config['show_thinking']}")
+            continue
         
+        answer = run_rag(q)
+        print("\nanswer:\n")
+        print(answer)
         print("\n" + "-"*50)

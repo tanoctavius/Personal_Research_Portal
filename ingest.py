@@ -4,7 +4,7 @@ import os
 import csv
 from langchain_community.document_loaders import TextLoader, PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_community.embeddings import OllamaEmbeddings
+from langchain_ollama import OllamaEmbeddings
 from langchain_community.vectorstores import FAISS
 
 MANIFEST_PATH = "data/data_manifest.csv"
@@ -95,5 +95,5 @@ def create_vector_db():
     print("ingestion complete!")
 
 # COMMENTED OUT TO NOT RUN
-# if __name__ == "__main__":
-#     create_vector_db()
+if __name__ == "__main__":
+    create_vector_db()
