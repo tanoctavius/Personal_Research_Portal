@@ -1,5 +1,3 @@
-# DONT RUN THIS FILE, ALREADY RAN TO GIVE vectorstore_llama
-
 import os
 import csv
 from langchain_community.document_loaders import TextLoader, PyPDFLoader
@@ -54,7 +52,6 @@ def create_vector_db():
             continue
 
         try:
-            # curr we only have pdf, need to add another func if include others
             if file_path.lower().endswith('.pdf'):
                 loader = PyPDFLoader(file_path)
             else:
@@ -68,6 +65,8 @@ def create_vector_db():
                 doc.metadata['authors'] = entry.get('authors', 'Unknown Authors')
                 doc.metadata['year'] = entry.get('year', 'n.d.')
                 doc.metadata['url'] = entry.get('link/ DOI', '')
+                
+                doc.metadata['in_text_citation'] = entry.get('in_text_citation', f"({source_id})")
                 
             all_docs.extend(loaded_docs)
             print(f"loaded: {source_id}")
@@ -83,6 +82,9 @@ def create_vector_db():
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
     splits = text_splitter.split_documents(all_docs)
     
+    for i, split in enumerate(splits):
+        split.metadata['chunk_id'] = i
+    
     print(f"created {len(splits)} vector chunks.")
     print("initializing embeddings (nomic-embed-text)...")
     embeddings = OllamaEmbeddings(model="nomic-embed-text")
@@ -94,6 +96,6 @@ def create_vector_db():
     vectorstore.save_local(INDEX_PATH)
     print("ingestion complete!")
 
-# COMMENTED OUT TO NOT RUN
+# COMMENT THIS OUT IF YOURE NOT RUNNING IT OR ITLL REDO IT WHICH IS NO BUENO
 if __name__ == "__main__":
     create_vector_db()

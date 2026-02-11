@@ -4,9 +4,8 @@ import csv
 import re
 from langchain_community.vectorstores import FAISS
 from langchain_ollama import ChatOllama, OllamaEmbeddings
-from langchain_core.prompts import ChatPromptTemplate # <--- This is the fix
+from langchain_core.prompts import ChatPromptTemplate
 
-# --- Configuration ---
 index_path = "data/vectorstore_llama"
 log_file = "logs/rag_logs.csv"
 llm_model = "deepseek-r1"
@@ -32,6 +31,7 @@ def get_resources():
         exit()
 
 retriever, llm = get_resources()
+
 
 def clean_deepseek_think(text):
     return re.sub(r'<think>.*?</think>', '', text, flags=re.DOTALL).strip()
@@ -68,6 +68,7 @@ def run_rag(user_query):
     for q in search_queries:
         docs = retriever.invoke(q)
         for doc in docs:
+
             source_id = doc.metadata.get('source_id', 'unknown')
             chunk_id = doc.metadata.get('chunk_id', hash(doc.page_content) % 10000)
             
@@ -78,18 +79,23 @@ def run_rag(user_query):
     
     context_text = ""
     for doc in retrieved_docs:
-        meta = doc.metadata
-        s_id = meta.get('source_id', 'unknown')
-        c_id = meta.get('chunk_id', hash(doc.page_content) % 10000)
-        context_text += f"Source: {s_id} (Chunk {c_id})\nContent: {doc.page_content}\n---\n"
+        s_id = doc.metadata.get('source_id', 'unknown')
+        c_id = doc.metadata.get('chunk_id', hash(doc.page_content) % 10000)
+        
+        in_text_cit = doc.metadata.get('in_text_citation', f"({s_id})")
+        
+        context_text += f"Source ID: {s_id}\nChunk ID: {c_id}\nCitation Format: {in_text_cit}\nContent: {doc.page_content}\n---\n"
 
     system_prompt = """You are a rigorous research assistant. 
     Answer the user's question using ONLY the provided context.
     
     RULES:
-    1. Every claim must be immediately followed by a citation in format (SourceID, ChunkID).
-    2. If the context does not support the claim, DO NOT invent information. Say "I cannot find evidence for this."
-    3. Keep answers concise and direct.
+    1. Every claim must be immediately followed by a citation.
+    2. THE CITATION FORMAT MUST BE EXACTLY: (SourceID; Chunk ID; Citation Format)
+        Example: (Chen2024; Chunk 12; (Chen et al., 2024))
+    3. Use the 'Citation Format' provided in the context for the third part of the citation.
+    4. If the context does not support the claim, DO NOT invent information.
+    5. Keep answers concise and direct.
     """
     
     final_prompt = ChatPromptTemplate.from_messages([
