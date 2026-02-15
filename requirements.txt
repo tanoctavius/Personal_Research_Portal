@@ -1,8 +1,21 @@
-langchain
+langchain>=0.3.0
 langchain-community
-langchain-core
 langchain-ollama
-langchain-text-splitters
 faiss-cpu
-python-dotenv
 pypdf
+pandas
+
+# for stretch goal 1
+rank_bm25 
+
+# for stretch goal 2
+sentence-transformers  
+torch                  
+
+# for stretch goal 3
+langchain-experimental 
+scikit-learn   
+
+# for stretch goal 5
+ragas              
+datasets               
