@@ -39,7 +39,6 @@ Open your terminal and run these commands to download Deepseek and the embedding
 ```bash
 ollama pull deepseek-r1
 ollama pull nomic-embed-text
-ollama pull llama3.2
 
 ```
 

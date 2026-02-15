@@ -1,45 +1,24 @@
-# NOTE: RUNNING THIS FILE WILL TAKE SUPER LONG (~2 HOURS DUE TO EVALS)
+#NOTE: THIS FILE SHOULD BE RERAN EVERYTIME A NEW QUES IS ADDED
 
-import pandas as pd
 import os
 import re
-import sys
-import logging
+import json
 import warnings
-from datasets import Dataset 
-from ragas import evaluate
-from ragas.run_config import RunConfig
-
-# should be fine to ignore this stuff
-warnings.filterwarnings("ignore")
-os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
-os.environ["TRANSFORMERS_VERBOSITY"] = "error"
-
-try:
-    from ragas.metrics import Faithfulness, ResponseRelevancy
-except ImportError:
-    from ragas.metrics import Faithfulness, AnswerRelevance as ResponseRelevancy
-
-from ragas.llms import LangchainLLMWrapper
-from langchain_ollama import ChatOllama, OllamaEmbeddings
+from langchain_ollama import ChatOllama
 from langchain_core.prompts import ChatPromptTemplate
 from rag_pipeline import get_enhanced_retriever, format_citations
 
-logging.getLogger("transformers").setLevel(logging.ERROR)
-logging.getLogger("ragas").setLevel(logging.ERROR)
+warnings.filterwarnings("ignore")
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
-def run_evaluation():
-    print("Initializing Evaluation Resources...")
-    
-    _eval_llm = ChatOllama(model="llama3.2", temperature=0, timeout=600.0) 
-    evaluator_llm = LangchainLLMWrapper(_eval_llm)
-    evaluator_embeddings = OllamaEmbeddings(model="nomic-embed-text")
-    
-    faithfulness = Faithfulness()
-    answer_relevance = ResponseRelevancy()
+CACHE_FILE = "logs/generation_cache.json"
+SAFE_TIMEOUT = 600.0
 
+def generate_cache():
+    print("Initializing Generator Resources...")
+    
     retriever = get_enhanced_retriever()
-    generator_llm = ChatOllama(model="deepseek-r1", temperature=0, timeout=600.0)
+    generator_llm = ChatOllama(model="deepseek-r1", temperature=0, num_ctx=8192, timeout=SAFE_TIMEOUT)
 
     SYSTEM_PROMPT = """
     You are a rigorous research assistant. Answer based ONLY on the provided context.
@@ -74,20 +53,15 @@ def run_evaluation():
         {"type": "Edge Case", "query": "How many chickens would fit in Carnegie Mellon?"}
     ]
 
-    print(f"Starting RAGAs Evaluation on {len(eval_data)} queries...")
-    
-    data_for_ragas = {
-        "question": [],
-        "answer": [],
-        "contexts": [],
-        "type": []
-    }
+    print(f"Starting Generation for {len(eval_data)} queries...")
     
     prompt_template = ChatPromptTemplate.from_messages([
         ("system", SYSTEM_PROMPT),
         ("user", "Context:\n{context}\n\nQuestion: {question}")
     ])
     chain = prompt_template | generator_llm
+
+    cache_data = {"question": [], "answer": [], "contexts": [], "type": []}
 
     for i, item in enumerate(eval_data):
         q = item['query']
@@ -103,36 +77,19 @@ def run_evaluation():
             formatted_response = format_citations(response, docs)
             clean_response = re.sub(r'<think>.*?</think>', '', formatted_response, flags=re.DOTALL).strip()
 
-            data_for_ragas["question"].append(q)
-            data_for_ragas["answer"].append(clean_response)
-            data_for_ragas["contexts"].append(contexts)
-            data_for_ragas["type"].append(item['type'])
+            cache_data["question"].append(q)
+            cache_data["answer"].append(clean_response)
+            cache_data["contexts"].append(contexts)
+            cache_data["type"].append(item['type'])
             
         except Exception as e:
             print(f"Error on query '{q}': {e}")
 
-    dataset = Dataset.from_dict(data_for_ragas)
-    my_run_config = RunConfig(timeout=600, max_workers=1)
-
-    results = evaluate(
-        dataset=dataset,
-        metrics=[faithfulness, answer_relevance],
-        llm=evaluator_llm,
-        embeddings=evaluator_embeddings,
-        run_config=my_run_config
-    )
-
-    df = results.to_pandas()
-    df['type'] = data_for_ragas['type']
-    
     os.makedirs("logs", exist_ok=True)
-    df.to_csv("logs/evaluation_results.csv", index=False)
-    
-    print("\nEvaluation Complete!")
-    
-    cols = [c for c in df.columns if c in ['faithfulness', 'answer_relevancy', 'answer_relevance']]
-    if cols:
-        print(df.groupby('type')[cols].mean())
+    with open(CACHE_FILE, "w", encoding="utf-8") as f:
+        json.dump(cache_data, f, indent=4)
+        
+    print(f"\nGeneration Complete! Cache saved to: {CACHE_FILE}")
 
 if __name__ == "__main__":
-    run_evaluation()
+    generate_cache()
