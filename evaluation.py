@@ -4,14 +4,14 @@ import re
 import sys
 import logging
 import warnings
+from datasets import Dataset 
+from ragas import evaluate
+from ragas.run_config import RunConfig
 
 warnings.filterwarnings("ignore")
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 os.environ["TRANSFORMERS_VERBOSITY"] = "error"
 os.environ["TQD_DISABLE"] = "True"
-
-from datasets import Dataset 
-from ragas import evaluate
 
 try:
     from ragas.metrics import Faithfulness, ResponseRelevancy
@@ -29,7 +29,7 @@ logging.getLogger("ragas").setLevel(logging.ERROR)
 def run_evaluation():
     print("Initializing Evaluation Resources...")
     
-    _eval_llm = ChatOllama(model="deepseek-r1", temperature=0)
+    _eval_llm = ChatOllama(model="deepseek-r1", temperature=0, timeout=300)
     evaluator_llm = LangchainLLMWrapper(_eval_llm)
     evaluator_embeddings = OllamaEmbeddings(model="nomic-embed-text")
     
@@ -41,10 +41,9 @@ def run_evaluation():
 
     SYSTEM_PROMPT = """
     You are a rigorous research assistant. Answer based ONLY on the provided context.
-
     CITATION RULES:
     1. Every claim must be immediately followed by a citation in the format [SourceID].
-    2. Do NOT use (Author, Year) format yourself. Use the ID. The system will format it later.
+    2. Do NOT use (Author, Year) format yourself. Use the ID.
     3. If the context suggests an answer but isn't explicit, state your uncertainty.
     """
 
@@ -90,7 +89,7 @@ def run_evaluation():
 
     for i, item in enumerate(eval_data):
         q = item['query']
-        print(f"[{i+1}/{len(eval_data)}] Processing: {q[:50]}...")
+        print(f"[{i+1}/{len(eval_data)}] Generating: {q[:50]}...")
         
         try:
             docs = retriever.invoke(q)
@@ -118,7 +117,8 @@ def run_evaluation():
         dataset=dataset,
         metrics=[faithfulness, answer_relevance],
         llm=evaluator_llm,
-        embeddings=evaluator_embeddings
+        embeddings=evaluator_embeddings,
+        run_config=RunConfig(max_workers=1, timeout=600)
     )
 
     df = results.to_pandas()
@@ -129,7 +129,7 @@ def run_evaluation():
     
     print("\nEvaluation Complete!")
     print("Results saved to: logs/evaluation_results.csv")
-    print("\nAverage Scores by Query Type:")
+    
     cols = [c for c in df.columns if c in ['faithfulness', 'answer_relevancy', 'answer_relevance']]
     print(df.groupby('type')[cols].mean())
 
