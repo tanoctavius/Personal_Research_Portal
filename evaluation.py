@@ -8,10 +8,10 @@ from datasets import Dataset
 from ragas import evaluate
 from ragas.run_config import RunConfig
 
+# should be fine to ignore this stuff
 warnings.filterwarnings("ignore")
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 os.environ["TRANSFORMERS_VERBOSITY"] = "error"
-os.environ["TQD_DISABLE"] = "True"
 
 try:
     from ragas.metrics import Faithfulness, ResponseRelevancy
@@ -29,7 +29,7 @@ logging.getLogger("ragas").setLevel(logging.ERROR)
 def run_evaluation():
     print("Initializing Evaluation Resources...")
     
-    _eval_llm = ChatOllama(model="deepseek-r1", temperature=0, timeout=300)
+    _eval_llm = ChatOllama(model="llama3.2", temperature=0, timeout=600.0) 
     evaluator_llm = LangchainLLMWrapper(_eval_llm)
     evaluator_embeddings = OllamaEmbeddings(model="nomic-embed-text")
     
@@ -37,7 +37,7 @@ def run_evaluation():
     answer_relevance = ResponseRelevancy()
 
     retriever = get_enhanced_retriever()
-    generator_llm = ChatOllama(model="deepseek-r1", temperature=0)
+    generator_llm = ChatOllama(model="deepseek-r1", temperature=0, timeout=600.0)
 
     SYSTEM_PROMPT = """
     You are a rigorous research assistant. Answer based ONLY on the provided context.
@@ -109,16 +109,15 @@ def run_evaluation():
         except Exception as e:
             print(f"Error on query '{q}': {e}")
 
-    print("\nCalculating Metrics...")
-    
     dataset = Dataset.from_dict(data_for_ragas)
-    
+    my_run_config = RunConfig(timeout=600, max_workers=1)
+
     results = evaluate(
         dataset=dataset,
         metrics=[faithfulness, answer_relevance],
         llm=evaluator_llm,
         embeddings=evaluator_embeddings,
-        run_config=RunConfig(max_workers=1, timeout=600)
+        run_config=my_run_config
     )
 
     df = results.to_pandas()
@@ -128,10 +127,10 @@ def run_evaluation():
     df.to_csv("logs/evaluation_results.csv", index=False)
     
     print("\nEvaluation Complete!")
-    print("Results saved to: logs/evaluation_results.csv")
     
     cols = [c for c in df.columns if c in ['faithfulness', 'answer_relevancy', 'answer_relevance']]
-    print(df.groupby('type')[cols].mean())
+    if cols:
+        print(df.groupby('type')[cols].mean())
 
 if __name__ == "__main__":
     run_evaluation()

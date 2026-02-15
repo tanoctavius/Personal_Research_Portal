@@ -7,6 +7,7 @@ langchain-text-splitters==0.3.0
 faiss-cpu
 pypdf
 pandas
+numpy<2.0.0
 
 # --- Stretch Goal 1: Hybrid Retrieval ---
 rank_bm25
@@ -21,5 +22,5 @@ langchain-experimental
 scikit-learn
 
 # --- Stretch Goal 5: RAGAs Evaluation ---
-ragas
+ragas>=0.2.0
 datasets
