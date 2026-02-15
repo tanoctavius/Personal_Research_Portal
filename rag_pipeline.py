@@ -1,150 +1,111 @@
 import os
-import datetime
-import csv
+import pickle
 import re
 from langchain_community.vectorstores import FAISS
 from langchain_ollama import ChatOllama, OllamaEmbeddings
+from langchain.retrievers import EnsembleRetriever
+from langchain.retrievers.contextual_compression import ContextualCompressionRetriever
+from langchain.retrievers.document_compressors import CrossEncoderReranker
+from langchain_community.cross_encoders import HuggingFaceCrossEncoder
 from langchain_core.prompts import ChatPromptTemplate
 
-index_path = "data/vectorstore_llama"
-log_file = "logs/rag_logs.csv"
-llm_model = "deepseek-r1"
-embedding_model = "nomic-embed-text"
+INDEX_PATH = "data/vectorstore_llama"
+BM25_PATH = "data/bm25_retriever.pkl"
+LLM_MODEL = "deepseek-r1"
+EMBEDDING_MODEL = "nomic-embed-text"
+RERANKER_MODEL = "cross-encoder/ms-marco-MiniLM-L-6-v2"
 
-config = {"show_thinking": True}
-
-def get_resources():
-    print("loading models...")
-    embeddings = OllamaEmbeddings(model=embedding_model)
+def get_enhanced_retriever():
+    print("loading resources...")
+    embeddings = OllamaEmbeddings(model=EMBEDDING_MODEL)
     
-    if not os.path.exists(index_path):
-        print(f"error: index not found at {index_path}. run ingest first.")
-        exit()
-
-    try:
-        vectorstore = FAISS.load_local(index_path, embeddings, allow_dangerous_deserialization=True)
-        retriever = vectorstore.as_retriever(search_kwargs={"k": 5})
-        llm = ChatOllama(model=llm_model, temperature=0)
-        return retriever, llm
-    except Exception as e:
-        print(f"error loading resources: {e}")
-        exit()
-
-retriever, llm = get_resources()
-
-def parse_deepseek_output(text):
-    think_match = re.search(r'<think>(.*?)</think>', text, flags=re.DOTALL)
-    if think_match:
-        thought = think_match.group(1).strip()
-        answer = re.sub(r'<think>.*?</think>', '', text, flags=re.DOTALL).strip()
-        return thought, answer
-    else:
-        return None, text.strip()
-
-def clean_deepseek_think(text):
-    return re.sub(r'<think>.*?</think>', '', text, flags=re.DOTALL).strip()
-
-def expand_query(original_query):
-    template = """Generate 3 specific search queries to find evidence for this question. Output ONLY the queries, one per line.
-    Question: {query}"""
+    vectorstore = FAISS.load_local(INDEX_PATH, embeddings, allow_dangerous_deserialization=True)
+    faiss_retriever = vectorstore.as_retriever(search_kwargs={"k": 10})
     
-    prompt = ChatPromptTemplate.from_template(template)
-    chain = prompt | llm
-    response = chain.invoke({"query": original_query})
+    with open(BM25_PATH, "rb") as f:
+        bm25_retriever = pickle.load(f)
+        bm25_retriever.k = 10
     
-    content = clean_deepseek_think(response.content)
+    print("initializing hybrid retrieval (BM25 + FAISS)...")
+    ensemble_retriever = EnsembleRetriever(
+        retrievers=[bm25_retriever, faiss_retriever],
+        weights=[0.5, 0.5]
+    )
     
-    queries = content.split('\n')
-    clean_queries = [q.strip() for q in queries if q.strip()]
-    return clean_queries[:3] + [original_query]
+    print("initializing reranker (Cross-Encoder)...")
+    model = HuggingFaceCrossEncoder(model_name=RERANKER_MODEL)
+    compressor = CrossEncoderReranker(model=model, top_n=5)
+    
+    compression_retriever = ContextualCompressionRetriever(
+        base_compressor=compressor, 
+        base_retriever=ensemble_retriever
+    )
+    
+    return compression_retriever
 
-def log_interaction(query, sources, answer):
-    os.makedirs("logs", exist_ok=True)
-    file_exists = os.path.isfile(log_file)
+def format_citations(response_text, retrieved_docs):
+    cited_ids = set(re.findall(r'[\(\[]([A-Za-z0-9]+)(?:,.*?)?[\)\]]', response_text))
     
-    with open(log_file, 'a', newline='', encoding='utf-8') as f:
-        writer = csv.writer(f)
-        if not file_exists:
-            writer.writerow(["timestamp", "query", "retrieved_sources", "answer"])
-        writer.writerow([datetime.datetime.now(), query, str(sources), answer])
-
-def run_rag(user_query):
-    search_queries = expand_query(user_query)
-    print(f"searching with: {search_queries}")
+    if not cited_ids:
+        return response_text
     
-    unique_docs = {}
-    for q in search_queries:
-        docs = retriever.invoke(q)
-        for doc in docs:
-            source_id = doc.metadata.get('source_id', 'unknown')
-            chunk_id = doc.metadata.get('chunk_id', '0')
-            key = (source_id, chunk_id)
-            unique_docs[key] = doc
+    bibliography = ["\n\n### References"]
+    found_sources = set()
     
-    retrieved_docs = list(unique_docs.values())[:7]
+    doc_map = {d.metadata.get('source_id'): d.metadata for d in retrieved_docs}
     
-    context_text = ""
-    for doc in retrieved_docs:
-        s_id = doc.metadata.get('source_id', 'unknown')
-        c_id = doc.metadata.get('chunk_id', '0')
-        cit_fmt = doc.metadata.get('in_text_citation', f"({s_id})")
-        
-        context_text += f"[source_id: {s_id}, chunk_id: {c_id}, citation_ref: {cit_fmt}]\n{doc.page_content}\n\n"
+    for source_id in cited_ids:
+        if source_id in doc_map and source_id not in found_sources:
+            meta = doc_map[source_id]
+            entry = f"- **{source_id}**: {meta.get('authors')} ({meta.get('year')}). *{meta.get('title')}*."
+            if meta.get('url'):
+                entry += f" [Link]({meta.get('url')})"
+            bibliography.append(entry)
+            found_sources.add(source_id)
+            
+    return response_text + "\n".join(bibliography)
 
-    system_prompt = """You are a research assistant. Answer the question using ONLY the provided context.
-
-CRITICAL CITATION RULES:
-1. Every single sentence you write must end with a citation.
-2. The citation MUST follow this exact format: (SourceID; Chunk ChunkID; CitationRef)
-3. Do not create your own citations. Copy the 'citation_ref' from the context block exactly.
-
-EXAMPLE:
-Context: [source_id: Chen2024, chunk_id: 12, citation_ref: (Chen et al., 2024)] Emojis reduce ambiguity.
-Output: Emojis help reduce ambiguity in communication (Chen2024; Chunk 12; (Chen et al., 2024)).
-
-If the context does not support the answer, state that you cannot find evidence.
-"""
+def run_pipeline():
+    retriever = get_enhanced_retriever()
+    llm = ChatOllama(model=LLM_MODEL, temperature=0)
     
-    final_prompt = ChatPromptTemplate.from_messages([
+    system_prompt = """
+    You are a rigorous research assistant. Answer based ONLY on the provided context.
+    
+    CITATION RULES:
+    1. Every claim must be immediately followed by a citation in the format [SourceID].
+    2. Example: "Deep learning approaches have improved accuracy [Smith2023]."
+    3. Do not create a "References" section yourself; just use the inline tags.
+    4. If the context suggests an answer but isn't explicit, state your uncertainty.
+    """
+    
+    prompt_template = ChatPromptTemplate.from_messages([
         ("system", system_prompt),
         ("user", "Context:\n{context}\n\nQuestion: {question}")
     ])
     
-    chain = final_prompt | llm
-    print("generating answer...")
-    response = chain.invoke({"context": context_text, "question": user_query})
+    chain = prompt_template | llm
     
-    raw_output = response.content
-    thought, final_answer = parse_deepseek_output(raw_output)
-    
-    if config["show_thinking"] and thought:
-        print("\n" + "="*20 + " REASONING " + "="*20)
-        print(thought)
-        print("="*51 + "\n")
-    
-    source_list = [d.metadata.get('source_id') for d in retrieved_docs]
-    log_interaction(user_query, source_list, final_answer)
-    
-    return final_answer
-
-if __name__ == "__main__":
-    print(f"research portal phase 2 initialized ({llm_model})")
-    print("commands: 'quit' to exit, 'toggle think' to show/hide reasoning")
+    print("Research Portal V2 (Hybrid + Rerank) Ready.")
     
     while True:
-        q = input("\nask a research question: ").strip()
+        query = input("\nAsk (or 'exit'): ").strip()
+        if query.lower() == 'exit': break
         
-        if q.lower() in ['quit', 'exit']: 
-            break
+        print("searching & reranking...")
+        docs = retriever.invoke(query)
+        context_text = "\n\n".join([f"[{d.metadata.get('source_id')}]: {d.page_content}" for d in docs])
         
-        if q.lower() == 'toggle think':
-            config["show_thinking"] = not config["show_thinking"]
-            print(f"show thinking set to: {config['show_thinking']}")
-            continue
+        print("generating...")
+        response = chain.invoke({"context": context_text, "question": query})
         
-        if not q: continue 
+        final_output = format_citations(response.content, docs)
         
-        answer = run_rag(q)
-        print("ANSWER:\n")
-        print(answer)
-        print("\n" + "-"*50)
+        clean_output = re.sub(r'<think>.*?</think>', '', final_output, flags=re.DOTALL).strip()
+        
+        print("\n" + "="*50)
+        print(clean_output)
+        print("="*50 + "\n")
+
+if __name__ == "__main__":
+    run_pipeline()
