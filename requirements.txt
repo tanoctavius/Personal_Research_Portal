@@ -1,21 +1,25 @@
-langchain>=0.3.0
-langchain-community
-langchain-ollama
+# --- Core RAG Stack ---
+langchain==0.3.0
+langchain-community==0.3.0
+langchain-core==0.3.0
+langchain-ollama==0.2.0
+langchain-text-splitters==0.3.0
 faiss-cpu
 pypdf
 pandas
 
-# for stretch goal 1
-rank_bm25 
+# --- Stretch Goal 1: Hybrid Retrieval ---
+rank_bm25
 
-# for stretch goal 2
-sentence-transformers  
-torch                  
+# --- Stretch Goal 2: Reranking ---
+sentence-transformers
+torch
+transformers>=4.39.0
 
-# for stretch goal 3
-langchain-experimental 
-scikit-learn   
+# --- Stretch Goal 3: Semantic Chunking ---
+langchain-experimental
+scikit-learn
 
-# for stretch goal 5
-ragas              
-datasets               
+# --- Stretch Goal 5: RAGAs Evaluation ---
+ragas
+datasets

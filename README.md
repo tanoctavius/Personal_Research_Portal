@@ -25,6 +25,7 @@ cd personal-research-portal
 ```
 
 ### 2. Install Dependencies
+We HIGHLY HIGHLY recommend doing it in a venv so you have a completely fresh place (very painful if not).
 
 ```bash
 pip install -r requirements.txt
