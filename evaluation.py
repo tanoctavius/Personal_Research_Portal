@@ -36,6 +36,8 @@ eval_data = [
     {"type": "Edge Case", "query": "Does the corpus mention 'EmojiGAN' or image generation models for creating new emojis?"},
     {"type": "Edge Case", "query": "What specific hardware GPU was used to train the 'EmojiPrompt' system?"},
     {"type": "Edge Case", "query": "Are there any papers in the corpus published before 2018?"}
+    {"type": "Edge Case", "query": "What is life?"}
+    {"type": "Edge Case", "query": "How many chickens would fit in Carnegie Mellon?"}
 ]
 
 def run_evaluation():
