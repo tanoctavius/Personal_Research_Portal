@@ -8,6 +8,7 @@ from langchain_ollama import ChatOllama
 from langchain_core.prompts import ChatPromptTemplate
 from rag_pipeline import get_enhanced_retriever, format_citations
 
+# its fine to ignore htis
 warnings.filterwarnings("ignore")
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
