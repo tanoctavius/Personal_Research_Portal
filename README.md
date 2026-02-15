@@ -25,11 +25,12 @@ cd personal-research-portal
 ```
 
 ### 2. Install Dependencies
-We HIGHLY HIGHLY recommend doing it in a venv so you have a completely fresh place (very painful if not).
+We HIGHLY HIGHLY recommend doing it in a venv so you have a completely fresh place (very painful if not) due to req mismatches.
 
 ```bash
+conda create -n research_portal python=3.10 -y
+conda activate research_portal
 pip install -r requirements.txt
-
 ```
 
 ### 3. Pull the AI Models
@@ -38,6 +39,7 @@ Open your terminal and run these commands to download Deepseek and the embedding
 
 ```bash
 ollama pull deepseek-r1
+ollama pull llama3.2
 ollama pull nomic-embed-text
 
 ```
@@ -50,21 +52,21 @@ Place your PDF (`.pdf`) or Text (`.txt`) files into the `data/raw/` folder.
 
 ### 2. Update the Manifest
 
-Open `data/data_manifest.csv`. You must add a row for each new file you add to the raw folder. This file provides the metadata (Title, Author, Year) used for citations.
+Open `data/data_manifest.csv`. Every file must have a corresponding entry. This manifest is the "Source of Truth" for the Structured Citation system.
 
 **CSV Format:**
 
 ```csv
 source_id, title, authors, year, type, link/ DOI, raw_path, relevance, in_text_citation
-Zhang2025, "Emoti-Attack", "Zhang, Y.", 2025, Paper, [https://arxiv.org/](https://arxiv.org/)..., data/raw/Zhang2025.pdf, "Relevance note...", "(Zhang, 2025)"
+Zhang2025, "Emoti-Attack", "Yangshijie Zhang", 2025, Paper, https://arxiv.org/..., data/raw/Zhang2025.pdf, "Note...", "(Zhang, 2025)"
 
 ```
 
 *Note: Ensure titles are enclosed in double quotes if they contain commas. (Will mess up csv parsing if not)*
 
-### 3. Build the Database
+### 3. Build the Hybrid Database
 
-This processes your documents using Semantic Chunking and builds two indices: a FAISS vector store and a BM25 keyword index.
+This script performs Semantic Chunking and builds both the FAISS (Vector) and BM25 (Keyword) indices.
 
 ```bash
 python ingest.py
@@ -87,57 +89,59 @@ python rag_pipeline.py
 5. Type `quit` or `exit` to close the program.
 
 Characteristics:
-Hybrid Search: Automatically balances keyword matching and semantic meaning.
+1. Hybrid Search: Balances keyword accuracy (BM25) with semantic meaning (FAISS).
 
-Automatic Bibliography: Every answer extracts citations from the manifest and appends a Reference list.
+2. Cross-Encoder Reranking: Re-scores top results to ensure only the most relevant context is sent to the LLM.
 
-Toggle Reasoning: Type toggle think to see the model's internal logic.
+3. Automatic Bibliography: Every answer resolves internal tags into a readable (Author, Year) format and appends a References section.
+
+4. Production Logging: Every query, response, and latency metric is saved to logs/rag_logs.csv.
 
 
-## Evaluation
+## Advanced Evaluation (2-Step Checkpointing)
 
-To automatically test the system against 20 pre-defined queries (Direct, Synthesis, and Edge Cases):
+To handle the high latency of reasoning models, the evaluation is split into two phases. This allows us to generate answers once and grade them multiple times without re-running the LLM.
+
+Phase 1: Generation
+Generates answers for 22 benchmark queries and caches them to logs/generation_cache.json.
 
 ```bash
-python evaluate.py
-
+python generate_answers.py
 ```
 
-This script evaluates the system using RAGAs metrics:
+Phase 2: Grading
+Uses Llama 3.2 to grade the cached answers against RAGAs metrics (Faithfulness and Relevancy).
 
-Faithfulness: Measures if the answer is derived solely from the retrieved context (prevents hallucination).
-
-Answer Relevance: Measures how well the response addresses the specific query.
-
-Results: Detailed logs and average scores per query type (Direct, Synthesis, Edge Case) are saved to logs/evaluation_results.csv.
-
+```bash
+python evaluation.py
+```
 
 ## Stretch Goals Implemented
 
-1. Hybrid Retrieval (BM25 + FAISS): Combines traditional keyword search with modern vector embeddings to ensure technical terms (like specific paper names) are never missed.
+1. Hybrid Retrieval (BM25 + FAISS): Merges traditional search with vector embeddings to catch both technical terms and general concepts.
 
-2. Cross-Encoder Reranking: Once candidates are retrieved, a secondary model re-scores them to ensure only the most relevant 5 chunks reach the LLM.
+2. Cross-Encoder Reranking: Utilizes ms-marco-MiniLM to re-rank the top 20 retrieved chunks down to the best 5.
 
-3. Semantic Chunking: Uses a "safety-first" split followed by an embedding-based analyzer to break text at logical semantic shifts rather than arbitrary character counts.
+3. Semantic Chunking: Breaks documents at logical semantic shifts using AI embeddings instead of arbitrary character counts.
 
-4. Structured Citations: Implements a post-processing loop that resolves inline tags into a formatted bibliography using your data manifest.
-
+4. Structured Citations: A custom post-processing loop that maps internal IDs to your manifest's in_text_citation column.
 
 ## Project Structure
 
 ```text
 .
 ├── data/
-│   ├── raw/                  # Source PDFs and Text files
+│   ├── raw/                  # Source PDFs
 │   ├── vectorstore_llama/    # FAISS Dense Index
 │   ├── bm25_retriever.pkl    # BM25 Sparse Index
-│   └── data_manifest.csv     # Metadata (Title, Author, DOI)
+│   └── data_manifest.csv     # Citation Metadata
 ├── logs/
-│   ├── rag_logs.csv          # Chat interaction history
-│   └── evaluation_results.csv # RAGAs scores and latency logs
-├── ingest.py                 # Multi-stage ingestion (Semantic + BM25)
-├── rag_pipeline.py           # The RAG engine (Hybrid + Rerank + Citations)
-├── evaluate.py               # RAGAs evaluation suite (20 queries)
-└── requirements.txt          # Full dependency list
-
+│   ├── rag_logs.csv          # Interaction history
+│   ├── generation_cache.json # Cached answers for Eval
+│   └── evaluation_results.csv# Final RAGAs scores
+├── ingest.py                 # Semantic + BM25 Ingestion
+├── rag_pipeline.py           # Engine (Hybrid + Rerank + Logging)
+├── generate_answers.py       # Eval Phase 1 (Generating)
+├── evaluation.py             # Eval Phase 2 (Grading)
+└── requirements.txt          # Pinned Dependency list
 ```
