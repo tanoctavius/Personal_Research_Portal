@@ -63,7 +63,7 @@ Zhang2025, "Emoti-Attack", "Zhang, Y.", 2025, Paper, [https://arxiv.org/](https:
 
 ### 3. Build the Database
 
-Run the ingestion script to process your files and build the vector index. You must run this every time you add new files or update the manifest. Currently, we have ald run it for the 20 files.
+This processes your documents using Semantic Chunking and builds two indices: a FAISS vector store and a BM25 keyword index.
 
 ```bash
 python ingest.py
@@ -85,6 +85,14 @@ python rag_pipeline.py
 4. Toggle Reasoning: Type `toggle think` to show/hide DeepSeek's internal thought process.
 5. Type `quit` or `exit` to close the program.
 
+Characteristics:
+Hybrid Search: Automatically balances keyword matching and semantic meaning.
+
+Automatic Bibliography: Every answer extracts citations from the manifest and appends a Reference list.
+
+Toggle Reasoning: Type toggle think to see the model's internal logic.
+
+
 ## Evaluation
 
 To automatically test the system against 20 pre-defined queries (Direct, Synthesis, and Edge Cases):
@@ -94,27 +102,41 @@ python evaluate.py
 
 ```
 
-Results will be saved to logs/evaluation_results.csv.
+This script evaluates the system using RAGAs metrics:
+
+Faithfulness: Measures if the answer is derived solely from the retrieved context (prevents hallucination).
+
+Answer Relevance: Measures how well the response addresses the specific query.
+
+Results: Detailed logs and average scores per query type (Direct, Synthesis, Edge Case) are saved to logs/evaluation_results.csv.
+
+
+## Stretch Goals Implemented
+
+1. Hybrid Retrieval (BM25 + FAISS): Combines traditional keyword search with modern vector embeddings to ensure technical terms (like specific paper names) are never missed.
+
+2. Cross-Encoder Reranking: Once candidates are retrieved, a secondary model re-scores them to ensure only the most relevant 5 chunks reach the LLM.
+
+3. Semantic Chunking: Uses a "safety-first" split followed by an embedding-based analyzer to break text at logical semantic shifts rather than arbitrary character counts.
+
+4. Structured Citations: Implements a post-processing loop that resolves inline tags into a formatted bibliography using your data manifest.
+
 
 ## Project Structure
 
 ```text
 .
 ├── data/
-│   ├── raw/                  # PDFs go here
-│   ├── vectorstore_llama/    # FAISS vector database (created by ingest.py)
-│   └── data_manifest.csv     # Metadata + Citation format mapping
+│   ├── raw/                  # Source PDFs and Text files
+│   ├── vectorstore_llama/    # FAISS Dense Index
+│   ├── bm25_retriever.pkl    # BM25 Sparse Index
+│   └── data_manifest.csv     # Metadata (Title, Author, DOI)
 ├── logs/
-│   ├── rag_logs.csv          # History of all chat interactions
-│   └── evaluation_results.csv # Results from the eval script
-├── ingest.py                 # Builds DB (Extracts text -> Chunk IDs -> Embeddings)
-├── rag_pipeline.py           # Main Chat App (DeepSeek + Query Expansion)
-├── evaluate.py               # Automated testing script
-├── requirements.txt          # Python dependencies
-└── README.md
-
-```
-
-```
+│   ├── rag_logs.csv          # Chat interaction history
+│   └── evaluation_results.csv # RAGAs scores and latency logs
+├── ingest.py                 # Multi-stage ingestion (Semantic + BM25)
+├── rag_pipeline.py           # The RAG engine (Hybrid + Rerank + Citations)
+├── evaluate.py               # RAGAs evaluation suite (20 queries)
+└── requirements.txt          # Full dependency list
 
 ```
