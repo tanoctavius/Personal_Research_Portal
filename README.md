@@ -1,8 +1,8 @@
 # Personal Research Portal (Local RAG)
 
-Iteration 1:
-A local Retrieval-Augmented Generation (RAG) system that uses Llama 3 to answer questions based on uploaded PDFs. It runs entirely offline using Ollama.
+**Iteration 2: Advanced Hybrid Research Suite**
 
+A local Retrieval-Augmented Generation (RAG) system that uses **DeepSeek-R1** and **Llama 3.2** to analyze research papers. It implements professional-grade retrieval techniques (Hybrid Search + Reranking) and runs entirely offline using Ollama.
 
 ## Prerequisites
 
