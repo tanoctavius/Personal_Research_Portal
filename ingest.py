@@ -29,12 +29,12 @@ def ingest():
     manifest = load_clean_manifest()
     if not manifest: return
 
-    print("initializing embedding model (nomic-embed-text)...")
+    print("initializing embedding model...")
     embeddings = OllamaEmbeddings(model="nomic-embed-text")
 
-    print("initializing semantic chunker (this is slower but smarter)...")
-    text_splitter = SemanticChunker(embeddings, breakpoint_threshold_type="percentile")
-    fallback_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+    print("initializing splitters...")
+    semantic_splitter = SemanticChunker(embeddings, breakpoint_threshold_type="percentile")
+    safety_splitter = RecursiveCharacterTextSplitter(chunk_size=2000, chunk_overlap=0)
 
     all_docs = []
 
@@ -50,18 +50,22 @@ def ingest():
                 loader = TextLoader(file_path)
             
             raw_docs = loader.load()
-            
-            for doc in raw_docs:
+            safe_docs = safety_splitter.split_documents(raw_docs)
+
+            for doc in safe_docs:
                 doc.metadata['source_id'] = source_id
                 doc.metadata['title'] = entry.get('title', 'Unknown')
                 doc.metadata['authors'] = entry.get('authors', 'Unknown')
                 doc.metadata['year'] = entry.get('year', 'n.d.')
                 doc.metadata['url'] = entry.get('link/ DOI', '')
-            
-            splits = text_splitter.split_documents(raw_docs)
-            if not splits:
-                splits = fallback_splitter.split_documents(raw_docs)
-                
+
+            try:
+                print(f"semantic splitting {source_id}...")
+                splits = semantic_splitter.split_documents(safe_docs)
+            except Exception as e:
+                print(f"semantic failed for {source_id}, falling back. Error: {e}")
+                splits = safe_docs
+
             all_docs.extend(splits)
             print(f"loaded {source_id}: {len(splits)} chunks")
             
@@ -72,17 +76,16 @@ def ingest():
         print("no documents loaded.")
         return
 
-    print("building BM25 index (sparse retrieval)...")
+    print("building BM25 index...")
     bm25_retriever = BM25Retriever.from_documents(all_docs)
-    
     with open(BM25_PATH, "wb") as f:
         pickle.dump(bm25_retriever, f)
         
-    print("building FAISS index (dense retrieval)...")
+    print("building FAISS index...")
     vectorstore = FAISS.from_documents(documents=all_docs, embedding=embeddings)
     vectorstore.save_local(INDEX_PATH)
     
-    print("ingestion complete. Ready for Hybrid RAG.")
+    print("ingestion complete.")
 
 # COMMENT THIS OUT IF YOURE NOT RUNNING IT OR ITLL REDO IT WHICH IS NO BUENO
 if __name__ == "__main__":
