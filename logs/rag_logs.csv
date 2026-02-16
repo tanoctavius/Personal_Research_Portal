@@ -18,3 +18,119 @@ As a result, the 'Emoji Attack' enables harmful content to be **misclassified as
 
 ### References
 - **Klein2024**: Lars Klein, Roland Aydin, Robert West (2024). *Emojinize: Enriching Any Text with Emoji Translations*. [Link](https://arxiv.org/abs/2403.03857)",Klein2024|Klein2024|Klein2024|Klein2024|Klein2024,15.73,deepseek-r1
+2026-02-15 19:30:55,What success rate did Gopinadh and Hussain (2026) report for emoji-based jailbreaking on the Qwen 2 7B model?,"The success rate for emoji-based jailbreaking on the Qwen 2 7B model was 0% (Gopinadh and Hussain, 2026).
+
+### References
+- **Gopinadh2026**: M P V S Gopinadh, S Mahaboob Hussain (2026). *EMOJI-BASED JAILBREAKING OF LARGE LANGUAGE MODELS*. [Link](https://arxiv.org/abs/2601.00936v1)",Gopinadh2026|Gopinadh2026|Gopinadh2026|Gopinadh2026|Gopinadh2026,8.62,deepseek-r1
+2026-02-15 19:31:08,How does 'EmojiPrompt' obfuscate private data in cloud-based LLM interactions?,"EmojiPrompt obfuscates private data by using Large Language Models (LLMs) to perform a generative transformation. This process converts private data from natural language into non-natural language forms by incorporating a mixture of linguistic elements (e.g., abbreviated characters) and non-linguistic elements (e.g., emojis, emoticons, mathematical and logical operators) (Lin et al., 2025). Additionally, EmojiPrompt employs an atomic-level obfuscation strategy, which partitions private data into smaller modular units, obfuscates each unit separately, and then reconstructs the obfuscated data from these individual components (Lin et al., 2025).
+
+### References
+- **Lin2025**: Sam Lin, Wenyue Hua, Zhenting Wang, Mingyu Jin, Lizhou Fan, Yongfeng Zhang (2025). *EmojiPrompt: Generative Prompt Obfuscation for Privacy-Preserving Communication with Cloud-based LLMs*. [Link](https://arxiv.org/abs/2402.05868)",Lin2025|Lin2025|Lin2025|Lin2025|Lin2025,13.82,deepseek-r1
+2026-02-15 19:33:35,"According to Zappavigna (2025), what are the two main ways LLMs use emojis as interpersonal resources?","Based on the provided context, the study by Zappavigna (2025) identifies that LLMs use emojis as interpersonal resources primarily to shape interpersonal tone and build rapport. These functions are achieved by softening requests, signalling enthusiasm, and fostering a sense of connection (Zappavigna and Doran, 2025).
+
+However, the context does not explicitly state two distinct ""main ways"" but rather describes these as key functions within the broader analysis using the tenor system (TUNING) and the system of emoji-text convergence (Zappavigna and Doran, 2025). The study focuses on how these emoji functions contribute to making chatbots appear friendly and supportive (Zappavigna and Doran, 2025).
+
+Therefore, while the study highlights these interpersonal functions, it does not explicitly define two separate main ways beyond the framework of the tenor system and emoji-text convergence (Zappavigna and Doran, 2025).
+
+### References
+- **Zappavigna2025**: Michele Zappavigna, Y.J. Doran (2025). *Emoji as interpersonal resources in LLM chatbot conversations: a social semiotic analysis of tenor and affiliation in human–AI interaction*. [Link](https://doi.org/10.1080/10350330.2025.2570317)",Zappavigna2025|Zappavigna2025|Zappavigna2025|Zappavigna2025|Zappavigna2025,146.29,deepseek-r1
+2026-02-15 19:34:00,What method does Zhang (2025) introduce in 'Emoti-Attack'?,"Zhang (2025) introduces the **Emoji-Attack** method in 'Emoti-Attack' (Zhang, 2025). This method leverages emojis to create subtle, zero-perturbation adversarial attacks on NLP systems, targeting emojis as a distinct layer of attack to minimize perceptibility while maintaining effectiveness.
+
+### References
+- **Zhang2025**: Yangshijie Zhang (2025). *Emoti-Attack: Zero-Perturbation Adversarial Attacks on NLP Systems via Emoji Sequences*. [Link](https://arxiv.org/abs/2502.17392v1)",Zhang2025|Wei2025|Wei2025|Huang2025|Grover2025,25.38,deepseek-r1
+2026-02-15 19:34:28,"How does ChatGPT perform when annotating emoji irony compared to humans, according to Zhou et al. (2025)?","Based on the provided context, there is no information from Zhou et al. (2025) regarding ChatGPT's performance in annotating emoji irony. The study by Zhou et al. (2025) in the context focuses on sentiment annotation and downstream tasks, not irony detection. (Zhou et al., 2025)
+
+### References
+- **Zhou2025**: Yuhang Zhou, Paiheng Xu, Xiyao Wang, Xuan Lu, Ge Gao, Wei Ai (2025). *Emojis Decoded: Leveraging ChatGPT for Enhanced Understanding in Social Media Communications*. [Link](https://arxiv.org/abs/2402.01681)",Zhou2025|Zheng2025|Zheng2025|Zheng2025|Zhou2025,28.25,deepseek-r1
+2026-02-15 19:34:56,"What is the specific vulnerability identified in 'Small Symbols, Big Risks' regarding ASCII-based emoticons?","The specific vulnerability identified in ""Small Symbols, Big Risks"" is **emoticon semantic confusion**, where Large Language Models (LLMs) misinterpret ASCII-based emoticons as part of the user's instruction, leading to unintended and potentially destructive actions (Jiang et al., 2026). This vulnerability is pervasive, with an average confusion ratio exceeding 38%, and often results in ""silent failures""—syntactically valid outputs that deviate from user intent (Jiang et al., 2026).
+
+### References
+- **Jiang2026**: Weipeng Jiang, Xiaoyu Zhang, Juan Zhai, Shiqing Ma, Chao Shen, Yang Liu (2026). *Small Symbols, Big Risks: Exploring Emoticon Semantic Confusion in Large Language Models*. [Link](https://arxiv.org/abs/2601.07885)",Jiang2026|Jiang2026|Jiang2026|Jiang2026|Cui2025,27.42,deepseek-r1
+2026-02-15 19:35:17,Compare the adversarial attack strategies in Wei2025 ('Emoji Attack') vs Zhang2025 ('Emoti-Attack'). How do they differ in their use of emojis?,"Based on the provided context:
+
+Emoti-Attack (Zhang, 2025) is explicitly defined as a ""zero-perturbation"" adversarial attack that targets emojis as a distinct layer of manipulation, aiming for subtle changes with minimal disruption to the text (Zhang, 2025). It leverages emoji properties like polysemy and contextual framing (Grover, 2025).
+
+In contrast, Wei2025's Emoji Attack focuses on inserting emojis, particularly as a suffix, and optimizing a universal adversarial suffix using methods like GCG (Wei, Liu and Erichson, 2025). It demonstrates strong performance even against black-box defenses (Wei, Liu and Erichson, 2025).
+
+### References
+- **Wei2025**: Zhipeng Wei, Yuqi Liu, Benjamin Erichson (2025). *Emoji Attack: Enhancing Jailbreak Attacks Against Judge LLM Detection*. [Link](https://arxiv.org/abs/2411.01077v5)
+- **Zhang2025**: Yangshijie Zhang (2025). *Emoti-Attack: Zero-Perturbation Adversarial Attacks on NLP Systems via Emoji Sequences*. [Link](https://arxiv.org/abs/2502.17392v1)
+- **Grover2025**: Shubham Grover (2025). *Neutralizing the Emojis: Developing Robust LLM Defenses Against Adversarial Emoji-fiction Attacks*. [Link](https://ijsate.com/wp-content/uploads/2025/12/V2I12P35_IJSATE1225010.pdf)",Zhang2025|Wei2025|Zhang2025|Grover2025|Grover2025,21.71,deepseek-r1
+2026-02-15 19:36:01,Contrast the text-to-emoji translation approaches taken by 'EmojiLM' (Peng2023) and 'Emojinize' (Klein2024).,"Here is a contrast between the text-to-emoji translation approaches of EmojiLM and Emojinize based on the provided context:
+
+**1. Approach and Architecture:**
+   - **EmojiLM**: A sequence-to-sequence language model trained on a parallel English-Emoji corpus (Text2Emoji). It leverages a transformer-based architecture (similar to BART) for text-to-emoji translation, focusing on next-token prediction (Peng et al., 2023).
+   - **Emojinize**: A context-aware translation system that integrates feedback from an oracle model using a multi-shot mechanism. It employs a transformer architecture to handle bidirectional context and disambiguate synonyms (Klein, Aydin and West, 2024).
+
+**2. Context Awareness:**
+   - **EmojiLM**: Utilizes a left-to-right next-token prediction approach, considering only preceding context during translation (Peng et al., 2023).
+   - **Emojinize**: Incorporates both prior and subsequent context to disambiguate synonyms and improve translation accuracy, enabling bidirectional understanding (Klein, Aydin and West, 2024).
+
+**3. Output and Translation Quality:**
+   - **EmojiLM**: Generates emoji sequences that capture the essence of the input text, often combining multiple emojis to represent complex ideas (e.g., ""saw an incredible sunset"" translated to 🏔🌅👀💫) (Peng et al., 2023).
+   - **Emojinize**: Produces emoji translations that are context-sensitive and expressive, capable of handling multi-word expressions and improving text comprehension through bidirectional context (Klein, Aydin and West, 2024).
+
+**4. Evaluation and Claims:**
+   - **EmojiLM**: Outperforms text-to-text baselines like BART and text classification models like BERTweet, demonstrating advancements in emoji-based language understanding (Peng et al., 2023).
+   - **Emojinize**: Claims to outperform human annotation and improve text comprehension, supported by user studies and synthetic evaluations (Klein, Aydin and West, 2024).
+
+**5. Methodology:**
+   - **EmojiLM**: Relies on a large parallel corpus for training and distills knowledge from existing language models (Peng et al., 2023).
+   - **Emojinize**: Uses a multi-shot translation mechanism with feedback from an oracle model, enhancing translation accuracy and scalability (Klein, Aydin and West, 2024).
+
+In summary, **EmojiLM** focuses on sequence-to-sequence translation using next-token prediction, while **Emojinize** emphasizes bidirectional context and feedback mechanisms for more accurate and expressive emoji translations.
+
+### References
+- **Klein2024**: Lars Klein, Roland Aydin, Robert West (2024). *Emojinize: Enriching Any Text with Emoji Translations*. [Link](https://arxiv.org/abs/2403.03857)
+- **Peng2023**: Letian Peng, ZilongWang, Hang Liu, ZihanWang, Jingbo Shang (2023). *EmojiLM: Modeling the New Emoji Language*. [Link](https://arxiv.org/abs/2311.01751)",Peng2023|Peng2023|Klein2024|Peng2023|Klein2024,43.40,deepseek-r1
+2026-02-15 19:36:32,Discuss the safety implications of emojis in LLMs by synthesizing findings from Gopinadh2026 and Cui2025.,"The safety implications of emojis in LLMs are significant, as they can be exploited to trigger harmful outputs and bypass safety mechanisms. Cui2025 demonstrates that emojis can act as a ""heterogeneous semantic channel"" to evade LLM safety defenses, with experiments showing that emoji-augmented prompts significantly increase the likelihood of toxic generation across multiple models and languages (Cui et al., 2025). This toxicity is linked to data pollution in the training corpus, suggesting systemic vulnerabilities (Cui et al., 2025).
+
+Gopinadh2026 highlights that emojis can be weaponized for ""emoji-based jailbreaking,"" necessitating automated detection mechanisms and pre-deployment testing with emoji-augmented prompts to mitigate risks (Gopinadh and Hussain, 2026). Additionally, the study emphasizes the need to explore other non-textual inputs and address fairness implications, as emoji misinterpretation could disproportionately affect certain user groups, undermining the equitable deployment of LLMs (Gopinadh and Hussain, 2026).
+
+Together, these studies underscore that emojis introduce novel attack vectors for adversarial misuse, requiring both technical defenses (e.g., detection, robust tokenization) and interpretative research to understand and address the underlying mechanisms of emoji-triggered toxicity (Cui et al., 2025)(Gopinadh and Hussain, 2026).
+
+### References
+- **Gopinadh2026**: M P V S Gopinadh, S Mahaboob Hussain (2026). *EMOJI-BASED JAILBREAKING OF LARGE LANGUAGE MODELS*. [Link](https://arxiv.org/abs/2601.00936v1)
+- **Cui2025**: Shiyao Cui, Xijia Feng, Yingkang Wang, Junxiao Yang, Zhexin Zhang, Biplab Sikdar, Hongning Wang, Han Qiu, Minlie Huang (2025). *When Smiley Turns Hostile: Interpreting How Emojis Trigger LLMs’ Toxicity*. [Link](https://arxiv.org/abs/2509.11141)",Wei2025|Gopinadh2026|Cui2025|Cui2025|Cui2025,30.96,deepseek-r1
+2026-02-15 19:36:53,How does human interpretation of emojis (Chen2024) compare to LLM interpretation of emojis (Zhou2025)?,"I am unable to answer this question because the provided context does not include any sources by Chen2024 or Zhou2025. Therefore, I cannot compare their findings or make any claims about their work.",Zheng2025|Lyu2024|Zheng2025|Lyu2024|Cui2025,20.83,deepseek-r1
+2026-02-15 19:37:26,What evidence exists in the corpus regarding emojis being used for privacy (Lin2025) versus emojis being used for attacks (Wei2025)?,"Based on the provided context:
+
+1.  **Evidence for emojis being used for attacks:** The context provides evidence that emojis can be used in contexts related to attacks or harmful activities. Specifically, it mentions that emojis can be associated with ""hacking, phishing and illegally financial activities"" (Cui et al., 2025). This is supported by the analysis of emoji contexts showing associations with ""gambling, illegal downloads, fraud, and pornography"" (Cui et al., 2025).
+
+2.  **Evidence for emojis being used for privacy:** The provided context does not contain any direct evidence or discussion regarding emojis being used specifically for privacy purposes. The context focuses on emojis being used in harmful contexts, including potential attacks, but does not mention privacy as a distinct function or use case.
+
+### References
+- **Cui2025**: Shiyao Cui, Xijia Feng, Yingkang Wang, Junxiao Yang, Zhexin Zhang, Biplab Sikdar, Hongning Wang, Han Qiu, Minlie Huang (2025). *When Smiley Turns Hostile: Interpreting How Emojis Trigger LLMs’ Toxicity*. [Link](https://arxiv.org/abs/2509.11141)",Cui2025|Cui2025|Zhang2024|Peng2023|Cui2025,33.59,deepseek-r1
+2026-02-15 19:37:43,Does the corpus contain evidence about the use of emojis in audio-to-text transcription models like Whisper?,"No, the provided context does not contain any evidence or mention of emojis being used in audio-to-text transcription models like Whisper. The sources focus on emoji translation, emoji integration in NLP models, and emoji handling in text-based models, but there is no discussion of audio transcription or Whisper specifically (Peng et al., 2023), (Grover, 2025).
+
+### References
+- **Peng2023**: Letian Peng, ZilongWang, Hang Liu, ZihanWang, Jingbo Shang (2023). *EmojiLM: Modeling the New Emoji Language*. [Link](https://arxiv.org/abs/2311.01751)
+- **Grover2025**: Shubham Grover (2025). *Neutralizing the Emojis: Developing Robust LLM Defenses Against Adversarial Emoji-fiction Attacks*. [Link](https://ijsate.com/wp-content/uploads/2025/12/V2I12P35_IJSATE1225010.pdf)",Peng2023|Peng2023|Peng2023|Grover2025|Peng2023,16.94,deepseek-r1
+2026-02-15 19:38:17,What is the impact of emojis on stock market prediction algorithms according to these papers?,"Based on the provided context, there is no direct evidence or discussion regarding the impact of emojis on stock market prediction algorithms. The papers referenced focus on emoji functionality, ChatGPT applications, emoji prediction tasks, hate detection, and adversarial attacks on language models, but none address stock market prediction specifically.
+
+(Cui et al., 2025): The paper focuses on emojis in language models but does not mention stock markets (Cui et al., 2025).
+
+(Wei, Liu and Erichson, 2025): This paper discusses emoji attacks on language models for jailbreak purposes, not stock market prediction (Wei, Liu and Erichson, 2025).
+
+(Zhou et al., 2025): The paper reviews emoji functionalities and ChatGPT applications but does not address stock market prediction algorithms (Zhou et al., 2025).
+
+(Peng et al., 2023): This paper discusses emoji prediction benchmarks and related work but does not mention stock market prediction (Peng et al., 2023).
+
+Therefore, the provided context does not contain information on the impact of emojis on stock market prediction algorithms.
+
+### References
+- **Wei2025**: Zhipeng Wei, Yuqi Liu, Benjamin Erichson (2025). *Emoji Attack: Enhancing Jailbreak Attacks Against Judge LLM Detection*. [Link](https://arxiv.org/abs/2411.01077v5)
+- **Peng2023**: Letian Peng, ZilongWang, Hang Liu, ZihanWang, Jingbo Shang (2023). *EmojiLM: Modeling the New Emoji Language*. [Link](https://arxiv.org/abs/2311.01751)
+- **Cui2025**: Shiyao Cui, Xijia Feng, Yingkang Wang, Junxiao Yang, Zhexin Zhang, Biplab Sikdar, Hongning Wang, Han Qiu, Minlie Huang (2025). *When Smiley Turns Hostile: Interpreting How Emojis Trigger LLMs’ Toxicity*. [Link](https://arxiv.org/abs/2509.11141)
+- **Zhou2025**: Yuhang Zhou, Paiheng Xu, Xiyao Wang, Xuan Lu, Ge Gao, Wei Ai (2025). *Emojis Decoded: Leveraging ChatGPT for Enhanced Understanding in Social Media Communications*. [Link](https://arxiv.org/abs/2402.01681)",Cui2025|Wei2025|Zhou2025|Zhou2025|Peng2023,33.36,deepseek-r1
+2026-02-15 19:38:33,Does the corpus mention 'EmojiGAN' or image generation models for creating new emojis?,"The provided context does not mention 'EmojiGAN' or image generation models for creating new emojis (Peng et al., 2023).
+
+### References
+- **Peng2023**: Letian Peng, ZilongWang, Hang Liu, ZihanWang, Jingbo Shang (2023). *EmojiLM: Modeling the New Emoji Language*. [Link](https://arxiv.org/abs/2311.01751)",Peng2023|Peng2023|Peng2023|Peng2023|Grover2025,16.68,deepseek-r1
+2026-02-15 19:39:33,What specific hardware GPU was used to train the 'EmojiPrompt' system?,"I am unable to answer the question based on the provided context, as there is no information about the specific hardware GPU used to train the 'EmojiPrompt' system. [No citation available]",Lyu2024|Lyu2024|Jain2024|Jain2024|Guntuku2019,59.67,deepseek-r1
+2026-02-15 19:40:12,Are there any papers in the corpus published before 2018?,"Yes, there is at least one paper in the corpus published before 2018 (Grover, 2025).
+
+### References
+- **Grover2025**: Shubham Grover (2025). *Neutralizing the Emojis: Developing Robust LLM Defenses Against Adversarial Emoji-fiction Attacks*. [Link](https://ijsate.com/wp-content/uploads/2025/12/V2I12P35_IJSATE1225010.pdf)",Zhou2025|Peng2023|Zhou2025|Grover2025|Chen2024,39.49,deepseek-r1
+2026-02-15 19:40:30,What is life?,"Based on the provided context, the meaning of life is not explicitly defined or discussed. The context includes references to personality traits and artificial intelligence but does not address the philosophical question of ""What is life?"" Therefore, I cannot provide a definitive answer to this question based solely on the given information.",Guntuku2019|Jain2024|Guntuku2019|Zheng2025|Guntuku2019,17.59,deepseek-r1
+2026-02-15 19:40:48,How many chickens would fit in Carnegie Mellon?,"The provided context does not contain information about the size of Carnegie Mellon or any calculations related to fitting chickens. Therefore, I cannot provide an answer to this question based on the given context.",Qiu2024|Qiu2024|Qiu2024|Ghosh2025|Zappavigna2025,17.61,deepseek-r1
