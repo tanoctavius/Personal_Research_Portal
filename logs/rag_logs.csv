@@ -1,0 +1,20 @@
+2026-02-15 19:30:05,What is the 'Emoji Attack' method proposed by Wei et al. (2025) and how does it affect Judge LLMs?,"The 'Emoji Attack' method proposed by Wei et al. (2025) exploits a vulnerability in Judge LLMs known as **token segmentation bias**. This bias occurs when emojis or other delimiters alter the tokenization process, splitting words into smaller sub-tokens and causing distortions in the embeddings of the entire sequence (Wei, Liu and Erichson, 2025).
+
+This attack leverages **in-context learning** to systematically insert emojis into text before it is evaluated by a Judge LLM. The insertion induces embedding distortions and introduces semantic ambiguity, which significantly reduces the detection accuracy of the Judge LLM (Wei, Liu and Erichson, 2025).
+
+As a result, the 'Emoji Attack' enables harmful content to be **misclassified as safe**, effectively bypassing existing safeguards and detection mechanisms (Wei, Liu and Erichson, 2025).
+
+### References
+- **Wei2025**: Zhipeng Wei, Yuqi Liu, Benjamin Erichson (2025). *Emoji Attack: Enhancing Jailbreak Attacks Against Judge LLM Detection*. [Link](https://arxiv.org/abs/2411.01077v5)",Wei2025|Wei2025|Wei2025|Cui2025|Wei2025,24.37,deepseek-r1
+2026-02-15 19:30:17,"According to Chen et al. (2024), how do gender and age influence emoji comprehension?","According to Chen et al. (2024), their study examined the influence of gender, age, and culture on emoji comprehension, but the provided context does not explicitly detail the specific findings or mechanisms of how these factors influence comprehension (Chen et al., 2024).
+
+### References
+- **Chen2024**: Yihua Chen, Xingchen Yang, Hannah Howman, Ruth Filik (2024). *Individual differences in emoji comprehension: Gender, age, and culture*. [Link](https://doi.org/10.1371/journal.pone.0297379)",Zheng2025|Qiu2024|Chen2024|Zheng2025|Zheng2025,11.84,deepseek-r1
+2026-02-15 19:30:30,What is 'EmojiLM' and how was the Text2Emoji corpus created?,"'EmojiLM' is a model used for English-Emoji translation, as evidenced by its evaluation in the Text2Emoji corpus. The Text2Emoji corpus was created using large language models (LLMs), though the exact methodology is not explicitly detailed in the provided context. (Peng et al., 2023)
+
+### References
+- **Peng2023**: Letian Peng, ZilongWang, Hang Liu, ZihanWang, Jingbo Shang (2023). *EmojiLM: Modeling the New Emoji Language*. [Link](https://arxiv.org/abs/2311.01751)",Peng2023|Peng2023|Peng2023|Zappavigna2025|Zappavigna2025,13.71,deepseek-r1
+2026-02-15 19:30:46,Describe the 'Emojinize' system. How does it translate text to emojis?,"The 'Emojinize' system is an automatic translation system that converts English text into sequences of one or more emojis (Klein, Aydin and West, 2024). It leverages large language models (LLMs) to understand the semantic meaning of text and translate it into emoji sequences (Klein, Aydin and West, 2024). Unlike existing systems that use static lookup tables or next-token prediction, Emojinize considers both prior and subsequent contexts to disambiguate synonyms and ensure accurate translation (Klein, Aydin and West, 2024). It can handle both singular words and multi-word expressions by composing multiple emojis to express complex concepts (Klein, Aydin and West, 2024). The system's flexibility allows it to translate arbitrary text passages without requiring human input (Klein, Aydin and West, 2024).
+
+### References
+- **Klein2024**: Lars Klein, Roland Aydin, Robert West (2024). *Emojinize: Enriching Any Text with Emoji Translations*. [Link](https://arxiv.org/abs/2403.03857)",Klein2024|Klein2024|Klein2024|Klein2024|Klein2024,15.73,deepseek-r1

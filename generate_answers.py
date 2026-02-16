@@ -3,12 +3,12 @@
 import os
 import re
 import json
+import time
 import warnings
 from langchain_ollama import ChatOllama
 from langchain_core.prompts import ChatPromptTemplate
-from rag_pipeline import get_enhanced_retriever, format_citations
+from rag_pipeline import get_enhanced_retriever, format_citations, log_interaction
 
-# its fine to ignore htis
 warnings.filterwarnings("ignore")
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
@@ -69,6 +69,8 @@ def generate_cache():
         print(f"[{i+1}/{len(eval_data)}] Generating: {q[:50]}...")
         
         try:
+            start_time = time.time()
+            
             docs = retriever.invoke(q)
             contexts = [d.page_content for d in docs]
             context_text = "\n\n".join([f"[{d.metadata.get('source_id')}]: {d.page_content}" for d in docs])
@@ -78,10 +80,15 @@ def generate_cache():
             formatted_response = format_citations(response, docs)
             clean_response = re.sub(r'<think>.*?</think>', '', formatted_response, flags=re.DOTALL).strip()
 
+            end_time = time.time()
+
             cache_data["question"].append(q)
             cache_data["answer"].append(clean_response)
             cache_data["contexts"].append(contexts)
             cache_data["type"].append(item['type'])
+
+            source_ids = [d.metadata.get('source_id', 'Unknown') for d in docs]
+            log_interaction(q, clean_response, source_ids, end_time - start_time)
             
         except Exception as e:
             print(f"Error on query '{q}': {e}")
