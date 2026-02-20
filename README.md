@@ -85,7 +85,7 @@ python rag_pipeline.py
 1. Wait for the prompt `research portal phase 2...` to appear.
 2. Type your question (e.g., "What does Zhang say about emoji attacks?").
 3. The AI will answer and provide citations in the format `(Paper, Chunk, In_text_citation)`.
-4. Toggle Reasoning: Type `toggle think` to show/hide DeepSeek's internal thought process.
+4. Toggle Reasoning: Type `toggle think` to show/hide DeepSeeks internal thought process.
 5. Type `quit` or `exit` to close the program.
 
 
@@ -99,7 +99,7 @@ streamlit run src/app.py
 Notes on UI: 
 The application is divided into five main tabs and a sidebar tool palette:
 
-1. 💬 Synthesis Chat: The main interface. Ask questions to retrieve evidence and generate cited responses. Toggle the "View AI Thought Process" expander to see DeepSeek-R1's internal reasoning.
+1. 💬 Synthesis Chat: The main interface. Ask questions to retrieve evidence and generate cited responses. Toggle the "View AI Thought Process" expander to see DeepSeek-R1s internal reasoning.
 
 2. 🕸️ Knowledge Graph: Visualizes relationships between your research queries, source documents, and authors. Toggle between the "Recent" (last query only) and "Cumulative" (entire session) networks.
 
@@ -153,7 +153,7 @@ python evaluation.py
 
 3. **Semantic Chunking**: Breaks documents at logical semantic shifts using AI embeddings instead of arbitrary character counts.
 
-4. **Structured Citations**: A custom post-processing loop that maps internal IDs to your manifest's in_text_citation column.
+4. **Structured Citations**: A custom post-processing loop that maps internal IDs to your manifests in_text_citation column.
 
 ## Stretch Goals Implemented (Phase 3)
 
@@ -163,7 +163,7 @@ python evaluation.py
 
 3. **Dynamic Knowledge Graph**: Uses `networkx` and `Plotly` to map out relationships between queries, source documents, and authors both for individual queries and cumulatively across a session.
 
-4. **Automated Gap Finding**: A dedicated LLM chain that specifically analyzes retrieved context to identify logical gaps and missing evidence required to fully answer the user's prompt.
+4. **Automated Gap Finding**: A dedicated LLM chain that specifically analyzes retrieved context to identify logical gaps and missing evidence required to fully answer the users prompt.
 
 5. **Research Artifact Generation**: Prompt-engineered pipelines that instantly convert retrieved contexts into Evidence Tables, Annotated Bibliographies, and Synthesis Memos.
 
@@ -206,10 +206,10 @@ This project uses **RAGAs (Retrieval Augmented Generation Assessment)** to grade
 
 ### 2. Answer Relevancy (0.0 to 1.0)
 
-* **Definition:** Measures **Directness**. It checks if the response actually addresses the user's query.
+* **Definition:** Measures **Directness**. It checks if the response actually addresses the users query.
 * **How it works:** The Judge generates hypothetical questions based on the answer and calculates the semantic similarity to the original query.
 * **Score of 1.0:** The answer is direct and to the point.
-* **Score of 0.0:** The model dodged the question, provided irrelevant info, or stated "I don't know."
+* **Score of 0.0:** The model dodged the question, provided irrelevant info, or stated "I dont know."
 
 ### 3. Interpreting Your Results
 
@@ -224,7 +224,7 @@ When you look at `logs/evaluation_results.csv`, use this guide to diagnose perfo
 
 ### Note on "Edge Case" Queries
 
-For queries like *"How many chickens fit in CMU?"*, a score of **Faithfulness: 1.0 / Relevancy: 0.0** is the **ideal outcome**. It means the model truthfully stated it didn't know (Faithful) and correctly identified that the context was irrelevant to chickens (Low Relevancy to the user's intent of getting a number).
+For queries like *"How many chickens fit in CMU?"*, a score of **Faithfulness: 1.0 / Relevancy: 0.0** is the **ideal outcome**. It means the model truthfully stated it didnt know (Faithful) and correctly identified that the context was irrelevant to chickens (Low Relevancy to the users intent of getting a number).
 
 
 ## References
