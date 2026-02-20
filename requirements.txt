@@ -24,3 +24,8 @@ scikit-learn
 # --- Stretch Goal 5: RAGAs Evaluation ---
 ragas>=0.2.0
 datasets
+
+# Phase 3: 
+streamlit>=1.30.0
+plotly
+networkx

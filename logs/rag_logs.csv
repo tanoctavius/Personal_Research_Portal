@@ -134,3 +134,18 @@ Therefore, the provided context does not contain information on the impact of em
 - **Grover2025**: Shubham Grover (2025). *Neutralizing the Emojis: Developing Robust LLM Defenses Against Adversarial Emoji-fiction Attacks*. [Link](https://ijsate.com/wp-content/uploads/2025/12/V2I12P35_IJSATE1225010.pdf)",Zhou2025|Peng2023|Zhou2025|Grover2025|Chen2024,39.49,deepseek-r1
 2026-02-15 19:40:30,What is life?,"Based on the provided context, the meaning of life is not explicitly defined or discussed. The context includes references to personality traits and artificial intelligence but does not address the philosophical question of ""What is life?"" Therefore, I cannot provide a definitive answer to this question based solely on the given information.",Guntuku2019|Jain2024|Guntuku2019|Zheng2025|Guntuku2019,17.59,deepseek-r1
 2026-02-15 19:40:48,How many chickens would fit in Carnegie Mellon?,"The provided context does not contain information about the size of Carnegie Mellon or any calculations related to fitting chickens. Therefore, I cannot provide an answer to this question based on the given context.",Qiu2024|Qiu2024|Qiu2024|Ghosh2025|Zappavigna2025,17.61,deepseek-r1
+2026-02-19 19:45:29,How are emojis used in LLMs?,"Emojis are used in LLMs in several ways, as described in the provided context:
+
+1.  **Triggering Toxicity/Harmful Generation:** Emojis can be used in prompts to induce toxic or harmful outputs from LLMs. Research shows that prompts incorporating emojis can significantly increase the likelihood of generating harmful content compared to plain text prompts (Cui et al., 2025). This is attributed to emojis acting as a ""heterogeneous semantic channel"" that can bypass standard safety mechanisms (Cui et al., 2025).
+
+2.  **Assessing Harmful Intent:** Modified prompts containing emojis are fed into LLMs specifically to assess whether the emojis convey harmful intent, along with explanations for their use (Cui et al., 2025).
+
+3.  **Misinterpretation and Benign Perception:** There is a common misconception that emojis are inherently benign or trivial. However, research indicates this is not always the case. Emojis can convey serious or complex meanings and have been used in contexts like hate speech and oppression (Zappavigna and Doran, 2025). This highlights the potential for emojis to be misused or misinterpreted within LLMs.
+
+4.  **Correlation with Pretraining Data:** The study also explores a potential correlation between emoji-related data pollution in the pretraining corpus and the observed toxicity generation triggered by emojis (Cui et al., 2025).
+
+It is important to note that the provided context does not explicitly detail *how* specific emojis function within LLMs at a technical level (e.g., tokenization effects, sequence generation nuances), but it does cover the observed usage patterns and impacts.
+
+### References
+- **Cui2025**: Shiyao Cui, Xijia Feng, Yingkang Wang, Junxiao Yang, Zhexin Zhang, Biplab Sikdar, Hongning Wang, Han Qiu, Minlie Huang (2025). *When Smiley Turns Hostile: Interpreting How Emojis Trigger LLMs’ Toxicity*. [Link](https://arxiv.org/abs/2509.11141)
+- **Zappavigna2025**: Michele Zappavigna, Y.J. Doran (2025). *Emoji as interpersonal resources in LLM chatbot conversations: a social semiotic analysis of tenor and affiliation in human–AI interaction*. [Link](https://doi.org/10.1080/10350330.2025.2570317)",Cui2025|Cui2025|Cui2025|Zhou2025|Zappavigna2025,30.60,deepseek-r1
