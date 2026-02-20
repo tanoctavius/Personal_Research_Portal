@@ -178,6 +178,8 @@ with tab_chat:
     if submit_search and prompt:
         st.session_state.last_query = prompt
         all_docs = []
+        agentic_trace = ""
+        actual_prompt = prompt
         
         with st.spinner("Processing query..."):
             start_time = time.time()
@@ -185,9 +187,14 @@ with tab_chat:
             if agentic_mode:
                 plan_raw = planner_chain.invoke({"question": prompt}).content
                 sub_queries = [q.strip() for q in plan_raw.split('|') if q.strip()]
-                for sq in sub_queries:
+                
+                agentic_trace = "**Agentic Research Plan Executed:**\n"
+                for i, sq in enumerate(sub_queries, 1):
+                    agentic_trace += f"{i}. {sq}\n"
                     docs = st.session_state.retriever.invoke(sq)
                     all_docs.extend(docs)
+                
+                actual_prompt = f"Original Question: {prompt}\n\nInvestigated Sub-queries:\n{agentic_trace}\n\nSynthesize the context to comprehensively answer the Original Question."
             else:
                 all_docs = st.session_state.retriever.invoke(prompt)
 
@@ -197,12 +204,16 @@ with tab_chat:
             
             if not unique_docs:
                 clean_output = "No relevant documents found."
-                source_ids = []
+                if agentic_mode:
+                    clean_output = f"{agentic_trace}\n---\n{clean_output}"
             else:
                 context_text = "\n\n".join([f"[{d.metadata.get('source_id')}]: {d.page_content}" for d in unique_docs])
-                raw_response = chain.invoke({"context": context_text, "question": prompt}).content
+                raw_response = chain.invoke({"context": context_text, "question": actual_prompt}).content
                 final_output = format_citations(raw_response, unique_docs)
                 clean_output = re.sub(r'<think>.*?</think>', '', final_output, flags=re.DOTALL).strip()
+                
+                if agentic_mode:
+                    clean_output = f"{agentic_trace}\n---\n**Synthesis:**\n{clean_output}"
                 
                 end_time = time.time()
                 source_ids = list(set([d.metadata.get('source_id', 'Unknown') for d in unique_docs]))
