@@ -161,10 +161,10 @@ with st.sidebar:
                 ctx = "\n\n".join([f"[{d.metadata.get('source_id')}]: {d.page_content}" for d in st.session_state.last_docs])
                 raw_artifact = artifact_chain.invoke({"context": ctx, "artifact_type": artifact_type}).content
                 
-                think_match = re.search(r'<think>(.*?)</think>', raw_artifact, flags=re.DOTALL)
+                think_match = re.search(r'<think>(.*?)(?:</think>|$)', raw_artifact, flags=re.DOTALL | re.IGNORECASE)
                 think_text = think_match.group(1).strip() if think_match else ""
                 
-                clean_artifact = re.sub(r'<think>.*?</think>', '', raw_artifact, flags=re.DOTALL).strip()
+                clean_artifact = re.sub(r'<think>.*?(?:</think>|$)', '', raw_artifact, flags=re.DOTALL | re.IGNORECASE).strip()
                 st.session_state.messages.insert(0, {"role": "assistant", "content": f"**Generated Artifact: {artifact_type}**\n\n{clean_artifact}", "think": think_text})
                 st.rerun()
         else:
@@ -172,7 +172,7 @@ with st.sidebar:
 
 st.title("Personal Research Portal")
 
-tab_chat, tab_graph, tab_gaps = st.tabs(["💬 Synthesis Chat", "🕸️ Knowledge Graph", "🔍 Gap Finder"])
+tab_chat, tab_graph, tab_gaps, tab_info = st.tabs(["💬 Synthesis Chat", "🕸️ Knowledge Graph", "🔍 Gap Finder", "ℹ️ Info"])
 
 with tab_chat:
     with st.form(key="query_form", clear_on_submit=True):
@@ -215,11 +215,11 @@ with tab_chat:
                 context_text = "\n\n".join([f"[{d.metadata.get('source_id')}]: {d.page_content}" for d in unique_docs])
                 raw_response = chain.invoke({"context": context_text, "question": actual_prompt}).content
                 
-                think_match = re.search(r'<think>(.*?)</think>', raw_response, flags=re.DOTALL)
+                think_match = re.search(r'<think>(.*?)(?:</think>|$)', raw_response, flags=re.DOTALL | re.IGNORECASE)
                 think_text = think_match.group(1).strip() if think_match else ""
                 
                 final_output = format_citations(raw_response, unique_docs)
-                clean_output = re.sub(r'<think>.*?</think>', '', final_output, flags=re.DOTALL).strip()
+                clean_output = re.sub(r'<think>.*?(?:</think>|$)', '', final_output, flags=re.DOTALL | re.IGNORECASE).strip()
                 
                 if agentic_mode:
                     clean_output = f"{agentic_trace}\n---\n**Synthesis:**\n{clean_output}"
@@ -234,12 +234,12 @@ with tab_chat:
 
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
-            if message.get("think"):
-                with st.expander("View AI Thought Process"):
+            if message.get("think") and message["think"].strip():
+                with st.expander("💭 View AI Thought Process"):
                     st.markdown(message["think"])
             st.markdown(message["content"])
             if message["role"] == "assistant" and message.get("docs"):
-                with st.expander(f"View Retrieved Evidence ({len(message['docs'])} chunks)"):
+                with st.expander(f"📚 View Retrieved Evidence ({len(message['docs'])} chunks)"):
                     for d in message["docs"]:
                         st.markdown(f"**[{d.metadata.get('source_id')}]**: {d.page_content[:250]}...")
 
@@ -265,7 +265,29 @@ with tab_gaps:
             with st.spinner("Analyzing cross-source logic..."):
                 context_text = "\n\n".join([f"[{d.metadata.get('source_id')}]: {d.page_content}" for d in st.session_state.last_docs])
                 gap_analysis = gap_chain.invoke({"context": context_text, "question": st.session_state.last_query}).content
-                clean_gaps = re.sub(r'<think>.*?</think>', '', gap_analysis, flags=re.DOTALL).strip()
+                clean_gaps = re.sub(r'<think>.*?(?:</think>|$)', '', gap_analysis, flags=re.DOTALL | re.IGNORECASE).strip()
                 st.markdown(clean_gaps)
     else:
         st.info("Run a query first to analyze missing evidence.")
+
+with tab_info:
+    st.markdown("### 🏛️ System Architecture")
+    st.markdown("This Research Portal is powered by a Hybrid Retrieval-Augmented Generation (RAG) pipeline. It combines keyword search (BM25) and semantic search (FAISS) to retrieve relevant text chunks from a curated corpus, reranks them using a Cross-Encoder for precision, and uses an LLM to synthesize cited answers.")
+    
+    st.markdown("---")
+    
+    st.markdown("### 💬 Synthesis Chat")
+    st.markdown("The primary interface for questioning your corpus. Enter a research question to retrieve evidence and generate a cited response. You can expand the retrieved evidence chunks to verify claims and open the **💭 View AI Thought Process** drop-down to see the model's reasoning.")
+    
+    st.markdown("### 🕸️ Knowledge Graph")
+    st.markdown("Visualizes the relationships between your research questions, the retrieved documents (Sources), and their Authors.")
+    st.markdown("- **Recent**: Displays the network of entities mapped solely from your most recent query.")
+    st.markdown("- **Cumulative**: Builds an interconnected web of all queries and sources accessed during your current active session.")
+    
+    st.markdown("### 🔍 Gap Finder")
+    st.markdown("Critically evaluates the retrieved context against your specific question to highlight what information is missing and suggests targeted evidence needed to resolve those gaps.")
+    
+    st.markdown("### 🛠️ Sidebar Tools")
+    st.markdown("- **Agentic Deep Loop**: When enabled, the system acts autonomously. It breaks your complex main question into search-optimized sub-queries, executes multiple parallel searches, and synthesizes a comprehensive final answer.")
+    st.markdown("- **Export Capabilities**: Download your entire research thread as a Markdown file, or export your corpus metadata as a formatted BibTeX reference list.")
+    st.markdown("- **Artifact Generator**: Automatically transforms the evidence retrieved from your last query into formal academic structures like Evidence Tables, Annotated Bibliographies, or Synthesis Memos.")
