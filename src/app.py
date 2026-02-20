@@ -160,8 +160,12 @@ with st.sidebar:
             with st.spinner(f"Generating {artifact_type}..."):
                 ctx = "\n\n".join([f"[{d.metadata.get('source_id')}]: {d.page_content}" for d in st.session_state.last_docs])
                 raw_artifact = artifact_chain.invoke({"context": ctx, "artifact_type": artifact_type}).content
+                
+                think_match = re.search(r'<think>(.*?)</think>', raw_artifact, flags=re.DOTALL)
+                think_text = think_match.group(1).strip() if think_match else ""
+                
                 clean_artifact = re.sub(r'<think>.*?</think>', '', raw_artifact, flags=re.DOTALL).strip()
-                st.session_state.messages.insert(0, {"role": "assistant", "content": f"**Generated Artifact: {artifact_type}**\n\n{clean_artifact}"})
+                st.session_state.messages.insert(0, {"role": "assistant", "content": f"**Generated Artifact: {artifact_type}**\n\n{clean_artifact}", "think": think_text})
                 st.rerun()
         else:
             st.warning("Please run a query first to retrieve evidence for the artifact.")
@@ -204,11 +208,16 @@ with tab_chat:
             
             if not unique_docs:
                 clean_output = "No relevant documents found."
+                think_text = ""
                 if agentic_mode:
                     clean_output = f"{agentic_trace}\n---\n{clean_output}"
             else:
                 context_text = "\n\n".join([f"[{d.metadata.get('source_id')}]: {d.page_content}" for d in unique_docs])
                 raw_response = chain.invoke({"context": context_text, "question": actual_prompt}).content
+                
+                think_match = re.search(r'<think>(.*?)</think>', raw_response, flags=re.DOTALL)
+                think_text = think_match.group(1).strip() if think_match else ""
+                
                 final_output = format_citations(raw_response, unique_docs)
                 clean_output = re.sub(r'<think>.*?</think>', '', final_output, flags=re.DOTALL).strip()
                 
@@ -219,12 +228,15 @@ with tab_chat:
                 source_ids = list(set([d.metadata.get('source_id', 'Unknown') for d in unique_docs]))
                 log_interaction(prompt, clean_output, source_ids, end_time - start_time)
 
-        st.session_state.messages.insert(0, {"role": "assistant", "content": clean_output, "docs": unique_docs})
+        st.session_state.messages.insert(0, {"role": "assistant", "content": clean_output, "docs": unique_docs, "think": think_text})
         st.session_state.messages.insert(0, {"role": "user", "content": prompt})
         st.rerun()
 
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
+            if message.get("think"):
+                with st.expander("View AI Thought Process"):
+                    st.markdown(message["think"])
             st.markdown(message["content"])
             if message["role"] == "assistant" and message.get("docs"):
                 with st.expander(f"View Retrieved Evidence ({len(message['docs'])} chunks)"):

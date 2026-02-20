@@ -288,3 +288,29 @@ Note: The reasons for using emojis are diverse, spanning communication enhanceme
 
 ### References
 - **Klein2024**: Lars Klein, Roland Aydin, Robert West (2024). *Emojinize: Enriching Any Text with Emoji Translations*. [Link](https://arxiv.org/abs/2403.03857)",Guntuku2019|Klein2024|Peng2023|Zheng2025|Zhou2025,33.07,deepseek-r1
+2026-02-20 01:46:00,What is the 'Emoji Attack' method proposed by Wei et al. (2025) and how does it affect Judge LLMs?,"**Agentic Research Plan Executed:**
+1. ""What is the Emoji Attack method?
+2. Who proposed the Emoji Attack method in 2025?
+3. How does the Emoji Attack method affect Judge LLMs?""
+
+---
+**Synthesis:**
+The **Emoji Attack** is a method proposed by Wei et al. (2025) to enhance jailbreak attacks against Judge LLMs by exploiting **token segmentation bias**. This bias occurs when emojis are inserted into text, altering tokenization patterns and disrupting contextual embeddings, which leads to misclassifications of harmful content as safe (Wei, Liu and Erichson, 2025).
+
+### Key aspects of the Emoji Attack:
+1. **Mechanism**:  
+   - The attack leverages emojis to induce significant embedding shifts in Judge LLMs due to their unique sub-token representations and semantic ambiguity. Unlike traditional delimiters (e.g., spaces), emojis introduce both tokenization changes and semantic meaning, making the attack more effective (Wei, Liu and Erichson, 2025).
+   - It uses **in-context learning** to systematically insert emojis into generated text before evaluation by a Judge LLM, distorting the embedding space to evade detection (Wei, Liu and Erichson, 2025).
+
+2. **Effectiveness**:  
+   - Experiments demonstrate that the Emoji Attack significantly reduces unsafe prediction rates across multiple Judge LLMs (e.g., Llama Guard, ShieldLM, GPT-4). For instance, it reduced the unsafe rate for ShieldLM from 38.5% to 3.5% compared to a baseline jailbreak method (Wei, Liu and Erichson, 2025).
+   - The attack is lightweight, does not require extensive optimization, and can be integrated with existing jailbreak techniques, making it a practical tool for bypassing content moderation (Wei, Liu and Erichson, 2025).
+
+### Impact on Judge LLMs:
+- The attack exploits vulnerabilities in token segmentation, causing Judge LLMs to misclassify harmful content as safe due to disrupted embeddings and semantic ambiguity (Wei, Liu and Erichson, 2025).
+- This highlights the fragility of current content moderation systems and underscores the need for robust defenses against such tokenization-based attacks (Wei, Liu and Erichson, 2025).
+
+**Reference**: Wei et al. (2025). *Emoji Attack: Exploiting Token Segmentation Bias in Judge LLMs*.
+
+### References
+- **Wei2025**: Zhipeng Wei, Yuqi Liu, Benjamin Erichson (2025). *Emoji Attack: Enhancing Jailbreak Attacks Against Judge LLM Detection*. [Link](https://arxiv.org/abs/2411.01077v5)",Wei2025|Jiang2026|Grover2025,63.08,deepseek-r1
