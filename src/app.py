@@ -3,6 +3,7 @@ import os
 import re
 import csv
 import time
+import pandas as pd
 import streamlit as st
 import networkx as nx
 import plotly.graph_objects as go
@@ -172,7 +173,7 @@ with st.sidebar:
 
 st.title("Personal Research Portal")
 
-tab_chat, tab_graph, tab_gaps, tab_info = st.tabs(["💬 Synthesis Chat", "🕸️ Knowledge Graph", "🔍 Gap Finder", "ℹ️ Info"])
+tab_chat, tab_graph, tab_gaps, tab_eval, tab_info = st.tabs(["💬 Synthesis Chat", "🕸️ Knowledge Graph", "🔍 Gap Finder", "📊 Evaluation", "ℹ️ Info"])
 
 with tab_chat:
     with st.form(key="query_form", clear_on_submit=True):
@@ -270,6 +271,53 @@ with tab_gaps:
     else:
         st.info("Run a query first to analyze missing evidence.")
 
+with tab_eval:
+    st.markdown("### RAG Evaluation Dashboard")
+    eval_file = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'logs', 'evaluation_results.csv'))
+    
+    if os.path.exists(eval_file):
+        df = pd.read_csv(eval_file)
+        
+        f_col = 'faithfulness' if 'faithfulness' in df.columns else df.columns[1]
+        r_col = 'answer_relevancy' if 'answer_relevancy' in df.columns else df.columns[2]
+        
+        col1, col2 = st.columns(2)
+        col1.metric("Average Faithfulness", f"{df[f_col].mean():.2f}")
+        col2.metric("Average Answer Relevancy", f"{df[r_col].mean():.2f}")
+        
+        st.markdown("---")
+        st.markdown("### Representative Examples")
+        
+        success_df = df[(df[f_col] >= 0.8) & (df[r_col] >= 0.8)]
+        if not success_df.empty:
+            with st.expander("✅ Success (High Faithfulness, High Relevancy)"):
+                ex = success_df.iloc[0]
+                st.markdown(f"**Query:** {ex.get('question', 'N/A')}")
+                st.markdown(f"**Answer:** {ex.get('answer', 'N/A')}")
+                st.markdown(f"**Scores:** Faithfulness: {ex[f_col]:.2f} | Relevancy: {ex[r_col]:.2f}")
+
+        safe_fail_df = df[(df[f_col] >= 0.8) & (df[r_col] < 0.5)]
+        if not safe_fail_df.empty:
+            with st.expander("🛡️ Safe Failure (High Faithfulness, Low Relevancy)"):
+                ex = safe_fail_df.iloc[0]
+                st.markdown(f"**Query:** {ex.get('question', 'N/A')}")
+                st.markdown(f"**Answer:** {ex.get('answer', 'N/A')}")
+                st.markdown(f"**Scores:** Faithfulness: {ex[f_col]:.2f} | Relevancy: {ex[r_col]:.2f}")
+
+        hallucination_df = df[(df[f_col] < 0.5) & (df[r_col] >= 0.5)]
+        if not hallucination_df.empty:
+            with st.expander("⚠️ Hallucination (Low Faithfulness, High Relevancy)"):
+                ex = hallucination_df.iloc[0]
+                st.markdown(f"**Query:** {ex.get('question', 'N/A')}")
+                st.markdown(f"**Answer:** {ex.get('answer', 'N/A')}")
+                st.markdown(f"**Scores:** Faithfulness: {ex[f_col]:.2f} | Relevancy: {ex[r_col]:.2f}")
+
+        st.markdown("---")
+        st.markdown("### Full Evaluation Results")
+        st.dataframe(df)
+    else:
+        st.info("No evaluation results found. Run `python evaluation.py` to generate `logs/evaluation_results.csv` and populate this dashboard.")
+
 with tab_info:
     st.markdown("### 🏛️ System Architecture")
     st.markdown("This Research Portal is powered by a Hybrid Retrieval-Augmented Generation (RAG) pipeline. It combines keyword search (BM25) and semantic search (FAISS) to retrieve relevant text chunks from a curated corpus, reranks them using a Cross-Encoder for precision, and uses an LLM to synthesize cited answers.")
@@ -287,6 +335,9 @@ with tab_info:
     st.markdown("### 🔍 Gap Finder")
     st.markdown("Critically evaluates the retrieved context against your specific question to highlight what information is missing and suggests targeted evidence needed to resolve those gaps.")
     
+    st.markdown("### 📊 Evaluation")
+    st.markdown("A view into the system's performance metrics based on automated evaluations. It displays average Faithfulness and Answer Relevancy scores, along with highlighted examples of specific behaviors.")
+
     st.markdown("### 🛠️ Sidebar Tools")
     st.markdown("- **Agentic Deep Loop**: When enabled, the system acts autonomously. It breaks your complex main question into search-optimized sub-queries, executes multiple parallel searches, and synthesizes a comprehensive final answer.")
     st.markdown("- **Export Capabilities**: Download your entire research thread as a Markdown file, or export your corpus metadata as a formatted BibTeX reference list.")

@@ -360,3 +360,10 @@ The **Emoji Attack** is a method proposed by Wei et al. (2025) to enhance jailbr
 
 ### References
 - **Wei2025**: Zhipeng Wei, Yuqi Liu, Benjamin Erichson (2025). *Emoji Attack: Enhancing Jailbreak Attacks Against Judge LLM Detection*. [Link](https://arxiv.org/abs/2411.01077v5)",Jiang2026|Grover2025|Wei2025,60.56,deepseek-r1
+2026-02-20 02:19:05,"According to Chen et al. (2024), how do gender and age influence emoji comprehension?","Based on the provided context, the specific findings from Chen et al. (2024) regarding how gender and age influence emoji comprehension are not detailed. The context indicates that Chen et al. (2024) conducted a study examining the influence of gender, age, and culture on emoji comprehension, but does not provide their conclusions or specific results on these factors (Chen et al., 2024).
+
+However, the context does mention that Zheng2025 (2025) references Chen et al. (2024) and notes that younger individuals generally demonstrate a heightened ability to detect irony in emoji usage compared to older cohorts (Zheng, Lyu and Luo, 2025). This suggests that age may be a factor in emoji interpretation, particularly for irony, but the specific influence of gender from Chen et al. (2024) is not elaborated upon in the provided text.
+
+### References
+- **Chen2024**: Yihua Chen, Xingchen Yang, Hannah Howman, Ruth Filik (2024). *Individual differences in emoji comprehension: Gender, age, and culture*. [Link](https://doi.org/10.1371/journal.pone.0297379)
+- **Zheng2025**: Yawen Zheng, Hanjia Lyu, Jiebo Luo (2025). *Irony in Emojis: A Comparative Study of Human and LLM Interpretation*. [Link](https://arxiv.org/abs/2501.11241)",Qiu2024|Chen2024|Zheng2025,32.02,deepseek-r1
