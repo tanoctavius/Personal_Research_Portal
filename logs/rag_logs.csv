@@ -149,3 +149,62 @@ It is important to note that the provided context does not explicitly detail *ho
 ### References
 - **Cui2025**: Shiyao Cui, Xijia Feng, Yingkang Wang, Junxiao Yang, Zhexin Zhang, Biplab Sikdar, Hongning Wang, Han Qiu, Minlie Huang (2025). *When Smiley Turns Hostile: Interpreting How Emojis Trigger LLMs’ Toxicity*. [Link](https://arxiv.org/abs/2509.11141)
 - **Zappavigna2025**: Michele Zappavigna, Y.J. Doran (2025). *Emoji as interpersonal resources in LLM chatbot conversations: a social semiotic analysis of tenor and affiliation in human–AI interaction*. [Link](https://doi.org/10.1080/10350330.2025.2570317)",Cui2025|Cui2025|Cui2025|Zhou2025|Zappavigna2025,30.60,deepseek-r1
+2026-02-19 20:01:32,How are emojis used in LLMs?,"Emojis are used in LLMs for various purposes, including detecting harmful content, triggering toxicity, facilitating translation, recommending emojis, executing malicious attacks, interpreting semantics, and manipulating personality traits. These applications are supported by studies such as (Cui et al., 2025), (Grover, 2025), (Klein, Aydin and West, 2024), (Qiu et al., 2024), (Wei, Liu and Erichson, 2025), (Zhou et al., 2025), and (Jain et al., 2024).
+
+### References
+- **Zhou2025**: Yuhang Zhou, Paiheng Xu, Xiyao Wang, Xuan Lu, Ge Gao, Wei Ai (2025). *Emojis Decoded: Leveraging ChatGPT for Enhanced Understanding in Social Media Communications*. [Link](https://arxiv.org/abs/2402.01681)
+- **Qiu2024**: Zhongyi Qiu, Kangyi Qiu, Hanjia Lyu, Wei Xiong, Jiebo Luo (2024). *Semantics Preserving Emoji Recommendation with Large Language Models*. [Link](https://arxiv.org/abs/2409.10760)
+- **Jain2024**: Navya Jain, Zekun Wu, Cristian Munoz, Airlie Hilliard, Xin Guan, Adriano Koshiyama, Emre Kazim, Philip Treleaven (2024). *From Text to Emoji: How PEFT-Driven Personality Manipulation Unleashes the Emoji Potential in LLMs*. [Link](https://arxiv.org/abs/2409.10245)
+- **Cui2025**: Shiyao Cui, Xijia Feng, Yingkang Wang, Junxiao Yang, Zhexin Zhang, Biplab Sikdar, Hongning Wang, Han Qiu, Minlie Huang (2025). *When Smiley Turns Hostile: Interpreting How Emojis Trigger LLMs’ Toxicity*. [Link](https://arxiv.org/abs/2509.11141)
+- **Grover2025**: Shubham Grover (2025). *Neutralizing the Emojis: Developing Robust LLM Defenses Against Adversarial Emoji-fiction Attacks*. [Link](https://ijsate.com/wp-content/uploads/2025/12/V2I12P35_IJSATE1225010.pdf)
+- **Klein2024**: Lars Klein, Roland Aydin, Robert West (2024). *Emojinize: Enriching Any Text with Emoji Translations*. [Link](https://arxiv.org/abs/2403.03857)
+- **Wei2025**: Zhipeng Wei, Yuqi Liu, Benjamin Erichson (2025). *Emoji Attack: Enhancing Jailbreak Attacks Against Judge LLM Detection*. [Link](https://arxiv.org/abs/2411.01077v5)",Zhou2025|Qiu2024|Jain2024|Cui2025|Grover2025|Klein2024|Wei2025,46.86,deepseek-r1
+2026-02-19 20:02:46,How are emojis evaluated?,"Emojis are evaluated using a **semantics preserving evaluation framework** that assesses a model's ability to recommend emojis maintaining semantic consistency with the text. This approach goes beyond traditional exact match criteria by evaluating whether recommended emojis preserve the user's affective state, demographic profile, and attitudinal stance, using downstream tasks like sentiment analysis and emotion classification (Qiu et al., 2024).
+
+### References
+- **Qiu2024**: Zhongyi Qiu, Kangyi Qiu, Hanjia Lyu, Wei Xiong, Jiebo Luo (2024). *Semantics Preserving Emoji Recommendation with Large Language Models*. [Link](https://arxiv.org/abs/2409.10760)",Zheng2025|Zhou2025|Ghosh2025|Qiu2024|Guntuku2019|Zappavigna2025|Klein2024|Chen2024,34.71,deepseek-r1
+2026-02-19 20:11:09,How are emojis used?,"Emojis are used in a variety of ways, including:
+
+1.  **Facilitating online communication** and conveying complex meanings, even in serious contexts (Zappavigna and Doran, 2025).
+2.  **Encoding context or obfuscating instructions** to bypass AI safety filters, for example by shifting the context to creative writing (Grover, 2025).
+3.  **Representing a wide range of meanings** depending on co-text, including security, confidentiality, emotional states, completion, or physical objects (Zappavigna and Doran, 2025).
+4.  **Enhancing communication in specific fields**:
+    *   Marketing (promotion) (Chen et al., 2024).
+    *   Medicine and public health (guiding behavior, improving doctor-patient communication) (Chen et al., 2024).
+    *   Computer science (sentiment analysis for machine learning) (Chen et al., 2024).
+    *   Education (improving learning efficiency) (Chen et al., 2024).
+5.  **Managing conversational dynamics** (tenor relations) and unfolding exchanges (Zappavigna and Doran, 2025).
+6.  **Ambiguity in interpretation** can occur, leading to variations in comprehension (Chen et al., 2024).
+
+These uses demonstrate the versatility of emojis beyond simple expression, including their application in high-stakes situations and their potential for misuse (Zappavigna and Doran, 2025).
+
+### References
+- **Grover2025**: Shubham Grover (2025). *Neutralizing the Emojis: Developing Robust LLM Defenses Against Adversarial Emoji-fiction Attacks*. [Link](https://ijsate.com/wp-content/uploads/2025/12/V2I12P35_IJSATE1225010.pdf)
+- **Chen2024**: Yihua Chen, Xingchen Yang, Hannah Howman, Ruth Filik (2024). *Individual differences in emoji comprehension: Gender, age, and culture*. [Link](https://doi.org/10.1371/journal.pone.0297379)
+- **Zappavigna2025**: Michele Zappavigna, Y.J. Doran (2025). *Emoji as interpersonal resources in LLM chatbot conversations: a social semiotic analysis of tenor and affiliation in human–AI interaction*. [Link](https://doi.org/10.1080/10350330.2025.2570317)",Klein2024|Grover2025|Chen2024|Zappavigna2025,34.27,deepseek-r1
+2026-02-19 20:16:31,how are emojis used?,"Emojis are used in a variety of ways, including:
+
+1.  **Facilitating Communication:** They help clarify meaning, avoid misunderstandings, substitute for text, and add emotional nuance (Chen et al., 2024)(Klein, Aydin and West, 2024).
+2.  **Expressing Emotion and Meaning:** They can convey complex or serious messages, not just trivial ones, and are used in high-stakes contexts like hate speech, oppression, and spreading conspiracy theories (Zappavigna and Doran, 2025). They can also express emotional states and indicate security/confidentiality depending on context (Zappavigna and Doran, 2025).
+3.  **Across Different Domains:**
+    *   **Marketing & Advertising:** To increase positive affect and purchase intention (Klein, Aydin and West, 2024).
+    *   **Medicine & Public Health:** To guide behavior and improve doctor-patient communication (Chen et al., 2024).
+    *   **Computer Science:** For sentiment analysis in machine learning (Chen et al., 2024).
+    *   **Education:** To improve learning efficiency (Chen et al., 2024).
+4.  **Linguistically:** They are considered part of the grammatical elements of language in digital communication, augmenting text with new layers of meaning (Klein, Aydin and West, 2024). They can replace text in some cases (Klein, Aydin and West, 2024).
+5.  **In Everyday Communication:** They are integrated into conversations, used by individuals and chatbots, and are a global form of communication (Klein, Aydin and West, 2024)(Cui et al., 2025).
+6.  **Managing Conversation:** They can be used internally by chatbots to manage the flow of dialogue (Zappavigna and Doran, 2025).
+7.  **Context-Dependent:** Their meaning is highly dependent on the surrounding context (co-text) due to their inherent under-specification (Zappavigna and Doran, 2025). This can sometimes lead to ambiguity in interpretation (Chen et al., 2024).
+
+(Zappavigna and Doran, 2025)(Chen et al., 2024)(Klein, Aydin and West, 2024)(Cui et al., 2025)
+
+### References
+- **Chen2024**: Yihua Chen, Xingchen Yang, Hannah Howman, Ruth Filik (2024). *Individual differences in emoji comprehension: Gender, age, and culture*. [Link](https://doi.org/10.1371/journal.pone.0297379)
+- **Klein2024**: Lars Klein, Roland Aydin, Robert West (2024). *Emojinize: Enriching Any Text with Emoji Translations*. [Link](https://arxiv.org/abs/2403.03857)
+- **Zappavigna2025**: Michele Zappavigna, Y.J. Doran (2025). *Emoji as interpersonal resources in LLM chatbot conversations: a social semiotic analysis of tenor and affiliation in human–AI interaction*. [Link](https://doi.org/10.1080/10350330.2025.2570317)
+- **Cui2025**: Shiyao Cui, Xijia Feng, Yingkang Wang, Junxiao Yang, Zhexin Zhang, Biplab Sikdar, Hongning Wang, Han Qiu, Minlie Huang (2025). *When Smiley Turns Hostile: Interpreting How Emojis Trigger LLMs’ Toxicity*. [Link](https://arxiv.org/abs/2509.11141)",Chen2024|Klein2024|Zappavigna2025|Cui2025,27.76,deepseek-r1
+2026-02-19 20:16:58,what do emojis mean?,"Emojis convey meanings that range from emotions and objects to actions (Zhou et al., 2025). Their interpretation is highly dependent on context, allowing for multiple meanings in different situations [Zhou2025; Grover2025]. Emojis can also be used to convey serious or complex meanings, including hate speech and conspiracy theories [Zappavign (2025); Gualda 2024]. However, their meanings are often superficial and brittle, especially when interpreted by systems like AI (Grover, 2025).
+
+### References
+- **Zhou2025**: Yuhang Zhou, Paiheng Xu, Xiyao Wang, Xuan Lu, Ge Gao, Wei Ai (2025). *Emojis Decoded: Leveraging ChatGPT for Enhanced Understanding in Social Media Communications*. [Link](https://arxiv.org/abs/2402.01681)
+- **Grover2025**: Shubham Grover (2025). *Neutralizing the Emojis: Developing Robust LLM Defenses Against Adversarial Emoji-fiction Attacks*. [Link](https://ijsate.com/wp-content/uploads/2025/12/V2I12P35_IJSATE1225010.pdf)",Zhou2025|Zappavigna2025|Grover2025,16.56,deepseek-r1
