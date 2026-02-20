@@ -7,7 +7,15 @@ import pandas as pd
 import streamlit as st
 import networkx as nx
 import plotly.graph_objects as go
-from langchain_ollama import ChatOllama
+from datasets import Dataset
+from ragas import evaluate
+from ragas.run_config import RunConfig
+try:
+    from ragas.metrics import Faithfulness, ResponseRelevancy
+except ImportError:
+    from ragas.metrics import Faithfulness, AnswerRelevance as ResponseRelevancy
+from ragas.llms import LangchainLLMWrapper
+from langchain_ollama import ChatOllama, OllamaEmbeddings
 from langchain_core.prompts import ChatPromptTemplate
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -273,50 +281,99 @@ with tab_gaps:
 
 with tab_eval:
     st.markdown("### RAG Evaluation Dashboard")
-    eval_file = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'logs', 'evaluation_results.csv'))
+    eval_hist_tab, eval_curr_tab = st.tabs(["Historical Evaluations", "Current Evaluation"])
     
-    if os.path.exists(eval_file):
-        df = pd.read_csv(eval_file)
-        
-        f_col = 'faithfulness' if 'faithfulness' in df.columns else df.columns[1]
-        r_col = 'answer_relevancy' if 'answer_relevancy' in df.columns else df.columns[2]
-        
-        col1, col2 = st.columns(2)
-        col1.metric("Average Faithfulness", f"{df[f_col].mean():.2f}")
-        col2.metric("Average Answer Relevancy", f"{df[r_col].mean():.2f}")
-        
-        st.markdown("---")
-        st.markdown("### Representative Examples")
-        
-        success_df = df[(df[f_col] >= 0.8) & (df[r_col] >= 0.8)]
-        if not success_df.empty:
-            with st.expander("✅ Success (High Faithfulness, High Relevancy)"):
-                ex = success_df.iloc[0]
-                st.markdown(f"**Query:** {ex.get('question', 'N/A')}")
-                st.markdown(f"**Answer:** {ex.get('answer', 'N/A')}")
-                st.markdown(f"**Scores:** Faithfulness: {ex[f_col]:.2f} | Relevancy: {ex[r_col]:.2f}")
+    with eval_hist_tab:
+        eval_file = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'logs', 'evaluation_results.csv'))
+        if os.path.exists(eval_file):
+            df = pd.read_csv(eval_file)
+            
+            f_col = next((col for col in df.columns if 'faithfulness' in col.lower()), df.columns[-2] if len(df.columns) >= 2 else df.columns[0])
+            r_col = next((col for col in df.columns if 'relevancy' in col.lower() or 'relevance' in col.lower()), df.columns[-1] if len(df.columns) >= 1 else df.columns[0])
+            q_col = next((col for col in df.columns if col.lower() in ['question', 'query', 'user_input']), df.columns[0])
+            a_col = next((col for col in df.columns if col.lower() in ['answer', 'response', 'result']), df.columns[1])
+            
+            col1, col2 = st.columns(2)
+            col1.metric("Average Faithfulness", f"{df[f_col].mean():.2f}")
+            col2.metric("Average Answer Relevancy", f"{df[r_col].mean():.2f}")
+            
+            st.markdown("---")
+            st.markdown("### Representative Examples")
+            
+            success_df = df[(df[f_col] >= 0.8) & (df[r_col] >= 0.8)]
+            if not success_df.empty:
+                with st.expander("✅ Success (High Faithfulness, High Relevancy)"):
+                    ex = success_df.iloc[0]
+                    st.markdown(f"**Query:** {ex[q_col]}")
+                    st.markdown(f"**Answer:** {ex[a_col]}")
+                    st.markdown(f"**Scores:** Faithfulness: {ex[f_col]:.2f} | Relevancy: {ex[r_col]:.2f}")
 
-        safe_fail_df = df[(df[f_col] >= 0.8) & (df[r_col] < 0.5)]
-        if not safe_fail_df.empty:
-            with st.expander("🛡️ Safe Failure (High Faithfulness, Low Relevancy)"):
-                ex = safe_fail_df.iloc[0]
-                st.markdown(f"**Query:** {ex.get('question', 'N/A')}")
-                st.markdown(f"**Answer:** {ex.get('answer', 'N/A')}")
-                st.markdown(f"**Scores:** Faithfulness: {ex[f_col]:.2f} | Relevancy: {ex[r_col]:.2f}")
+            safe_fail_df = df[(df[f_col] >= 0.8) & (df[r_col] < 0.5)]
+            if not safe_fail_df.empty:
+                with st.expander("🛡️ Safe Failure (High Faithfulness, Low Relevancy)"):
+                    ex = safe_fail_df.iloc[0]
+                    st.markdown(f"**Query:** {ex[q_col]}")
+                    st.markdown(f"**Answer:** {ex[a_col]}")
+                    st.markdown(f"**Scores:** Faithfulness: {ex[f_col]:.2f} | Relevancy: {ex[r_col]:.2f}")
 
-        hallucination_df = df[(df[f_col] < 0.5) & (df[r_col] >= 0.5)]
-        if not hallucination_df.empty:
-            with st.expander("⚠️ Hallucination (Low Faithfulness, High Relevancy)"):
-                ex = hallucination_df.iloc[0]
-                st.markdown(f"**Query:** {ex.get('question', 'N/A')}")
-                st.markdown(f"**Answer:** {ex.get('answer', 'N/A')}")
-                st.markdown(f"**Scores:** Faithfulness: {ex[f_col]:.2f} | Relevancy: {ex[r_col]:.2f}")
+            hallucination_df = df[(df[f_col] < 0.5) & (df[r_col] >= 0.5)]
+            if not hallucination_df.empty:
+                with st.expander("⚠️ Hallucination (Low Faithfulness, High Relevancy)"):
+                    ex = hallucination_df.iloc[0]
+                    st.markdown(f"**Query:** {ex[q_col]}")
+                    st.markdown(f"**Answer:** {ex[a_col]}")
+                    st.markdown(f"**Scores:** Faithfulness: {ex[f_col]:.2f} | Relevancy: {ex[r_col]:.2f}")
 
-        st.markdown("---")
-        st.markdown("### Full Evaluation Results")
-        st.dataframe(df)
-    else:
-        st.info("No evaluation results found. Run `python evaluation.py` to generate `logs/evaluation_results.csv` and populate this dashboard.")
+            st.markdown("---")
+            st.markdown("### Full Evaluation Results")
+            st.dataframe(df)
+        else:
+            st.info("No evaluation results found. Run `python evaluation.py` to generate `logs/evaluation_results.csv` and populate this dashboard.")
+
+    with eval_curr_tab:
+        st.markdown("### Evaluate Most Recent Query")
+        if st.button("Run Evaluation", width="stretch"):
+            if len(st.session_state.messages) < 2 or st.session_state.messages[0]["role"] != "user":
+                st.warning("No complete query and response to evaluate. Please run a search first.")
+            else:
+                user_q = st.session_state.messages[0]["content"]
+                ast_resp = st.session_state.messages[1]["content"]
+                docs_used = st.session_state.messages[1].get("docs", [])
+                
+                if not docs_used:
+                    st.warning("No context was retrieved for the last query, cannot evaluate RAG metrics.")
+                else:
+                    with st.spinner("Running RAGAs Evaluation on the latest query... This may take a minute."):
+                        ctx_texts = [d.page_content for d in docs_used]
+                        data_dict = {
+                            "question": [user_q],
+                            "answer": [ast_resp],
+                            "contexts": [ctx_texts]
+                        }
+                        
+                        dataset = Dataset.from_dict(data_dict)
+                        
+                        eval_llm = ChatOllama(model="llama3.2", temperature=0, num_ctx=8192, timeout=600.0)
+                        wrapped_llm = LangchainLLMWrapper(eval_llm)
+                        eval_embeddings = OllamaEmbeddings(model="nomic-embed-text")
+                        
+                        res = evaluate(
+                            dataset=dataset,
+                            metrics=[Faithfulness(), ResponseRelevancy()],
+                            llm=wrapped_llm,
+                            embeddings=eval_embeddings,
+                            run_config=RunConfig(timeout=600, max_workers=1)
+                        )
+                        
+                        res_df = res.to_pandas()
+                        f_score = res_df.get('faithfulness', [0])[0]
+                        r_score = next((res_df[c][0] for c in res_df.columns if 'relevancy' in c.lower() or 'relevance' in c.lower()), 0)
+                        
+                        st.markdown("#### Evaluation Results")
+                        c1, c2 = st.columns(2)
+                        c1.metric("Faithfulness", f"{f_score:.2f}")
+                        c2.metric("Answer Relevancy", f"{r_score:.2f}")
+                        st.dataframe(res_df)
 
 with tab_info:
     st.markdown("### 🏛️ System Architecture")
@@ -336,7 +393,9 @@ with tab_info:
     st.markdown("Critically evaluates the retrieved context against your specific question to highlight what information is missing and suggests targeted evidence needed to resolve those gaps.")
     
     st.markdown("### 📊 Evaluation")
-    st.markdown("A view into the system's performance metrics based on automated evaluations. It displays average Faithfulness and Answer Relevancy scores, along with highlighted examples of specific behaviors.")
+    st.markdown("A view into the system's performance metrics based on automated evaluations.")
+    st.markdown("- **Historical Evaluations**: Reads saved logs from your offline evaluation script.")
+    st.markdown("- **Current Evaluation**: Manually run on-the-fly RAGAs metrics against your most recent chat search.")
 
     st.markdown("### 🛠️ Sidebar Tools")
     st.markdown("- **Agentic Deep Loop**: When enabled, the system acts autonomously. It breaks your complex main question into search-optimized sub-queries, executes multiple parallel searches, and synthesizes a comprehensive final answer.")
