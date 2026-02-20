@@ -208,3 +208,67 @@ These uses demonstrate the versatility of emojis beyond simple expression, inclu
 ### References
 - **Zhou2025**: Yuhang Zhou, Paiheng Xu, Xiyao Wang, Xuan Lu, Ge Gao, Wei Ai (2025). *Emojis Decoded: Leveraging ChatGPT for Enhanced Understanding in Social Media Communications*. [Link](https://arxiv.org/abs/2402.01681)
 - **Grover2025**: Shubham Grover (2025). *Neutralizing the Emojis: Developing Robust LLM Defenses Against Adversarial Emoji-fiction Attacks*. [Link](https://ijsate.com/wp-content/uploads/2025/12/V2I12P35_IJSATE1225010.pdf)",Zhou2025|Zappavigna2025|Grover2025,16.56,deepseek-r1
+2026-02-20 01:05:38,What are emojis?,"Emojis are a pre-defined set of pictograms, logograms, ideograms, or smileys typically embedded in electronic messages and web pages to convey emotional cues (Peng et al., 2023). They evolved from emoticons but offer a more visually expressive and nuanced form of communication, being colourful pictures that can represent complex emotions and meanings (Chen et al., 2024). Emojis are considered a global or ubiquitous language and an evolution of visual language, playing a crucial grammatical role in digital communication (Peng et al., 2023).
+
+### References
+- **Chen2024**: Yihua Chen, Xingchen Yang, Hannah Howman, Ruth Filik (2024). *Individual differences in emoji comprehension: Gender, age, and culture*. [Link](https://doi.org/10.1371/journal.pone.0297379)
+- **Peng2023**: Letian Peng, ZilongWang, Hang Liu, ZihanWang, Jingbo Shang (2023). *EmojiLM: Modeling the New Emoji Language*. [Link](https://arxiv.org/abs/2311.01751)",Klein2024|Zappavigna2025|Peng2023|Chen2024|Zhou2025,23.41,deepseek-r1
+2026-02-20 01:12:34,How are emojis used within the context of LLMs?,"Emojis are used in several ways within the context of LLMs, as described in the provided context:
+
+1.  **Triggering Toxicity**: Emojis can be used to bypass LLM safety filters and elicit harmful responses. Replacing certain words in a prompt with semantically similar emojis can sometimes trigger toxicity generation that was not present in the plain-text version (Cui et al., 2025).
+
+2.  **Assessing Harmful Intent**: Modified prompts containing emojis are fed into LLMs to assess whether the emojis convey harmful intent, often accompanied by explanations (Cui et al., 2025).
+
+3.  **Expressing Emotion/Distress**: Emojis serve distinct expressive functions depending on the context. In serious emotional states or self-harm discussions, emojis often use metaphorical or symbolic representation. In casual contexts, emojis tend to be used more literally (Ghosh et al., 2025).
+
+4.  **Bypassing Safety Filters (Attack Vectors)**: Emojis can be used in ""context-shift"" attacks to disguise malicious intent by creating a fictional context (e.g., for creative writing), thereby bypassing safety filters (Grover, 2025).
+
+5.  **Encoding Malicious Instructions (Attack Vectors)**: Emojis can also be used in ""Instruction-Hijack"" attacks to encode or obfuscate parts of a malicious instruction, exploiting the model's instruction-following capabilities (Grover, 2025).
+
+These findings highlight both the expressive potential and the potential risks associated with emoji usage in LLM interactions (Cui et al., 2025).
+
+### References
+- **Cui2025**: Shiyao Cui, Xijia Feng, Yingkang Wang, Junxiao Yang, Zhexin Zhang, Biplab Sikdar, Hongning Wang, Han Qiu, Minlie Huang (2025). *When Smiley Turns Hostile: Interpreting How Emojis Trigger LLMs’ Toxicity*. [Link](https://arxiv.org/abs/2509.11141)
+- **Ghosh2025**: Soumitra Ghosh, Gopendra Vikram Singh, Shambhavi, Sabarna Choudhury, Asif Ekbal (2025). *Just a Scratch: Enhancing LLM Capabilities for Self-harm Detection through Intent Differentiation and Emoji Interpretation*. [Link](https://arxiv.org/abs/2506.05073)
+- **Grover2025**: Shubham Grover (2025). *Neutralizing the Emojis: Developing Robust LLM Defenses Against Adversarial Emoji-fiction Attacks*. [Link](https://ijsate.com/wp-content/uploads/2025/12/V2I12P35_IJSATE1225010.pdf)",Cui2025|Ghosh2025|Grover2025,31.17,deepseek-r1
+2026-02-20 01:13:28,WHy are emojis used?,"Emojis are used for a variety of reasons, including:
+
+*   To facilitate online communication (Chen et al., 2024).
+*   In marketing for promotion, attracting attention, and describing consumer emotions (Chen et al., 2024).
+*   In medicine and public health to guide behavior and improve doctor-patient communication (Chen et al., 2024).
+*   In computer science for sentiment analysis to improve unsupervised machine learning (Chen et al., 2024).
+*   In education to improve learning efficiency (Chen et al., 2024).
+*   To avoid misunderstanding and substitute textual expressions (Klein, Aydin and West, 2024).
+*   By advertisers to increase positive affect and purchase intention (Klein, Aydin and West, 2024).
+*   By influencers to encourage responses from followers (Klein, Aydin and West, 2024).
+*   To convey serious or complex meanings, including in high-stakes contexts like hate speech and conspiracy theories (Zappavigna and Doran, 2025).
+*   To enable intuitive communication (Klein, Aydin and West, 2024).
+
+Note: The reasons for using emojis are diverse, spanning communication enhancement, professional applications, and various other domains.
+
+### References
+- **Chen2024**: Yihua Chen, Xingchen Yang, Hannah Howman, Ruth Filik (2024). *Individual differences in emoji comprehension: Gender, age, and culture*. [Link](https://doi.org/10.1371/journal.pone.0297379)
+- **Klein2024**: Lars Klein, Roland Aydin, Robert West (2024). *Emojinize: Enriching Any Text with Emoji Translations*. [Link](https://arxiv.org/abs/2403.03857)
+- **Zappavigna2025**: Michele Zappavigna, Y.J. Doran (2025). *Emoji as interpersonal resources in LLM chatbot conversations: a social semiotic analysis of tenor and affiliation in human–AI interaction*. [Link](https://doi.org/10.1080/10350330.2025.2570317)",Chen2024|Klein2024|Zappavigna2025,30.54,deepseek-r1
+2026-02-20 01:18:29,What are emojis?,"Emojis are a pre-defined set of pictograms, logograms, ideograms, or smileys typically embedded in electronic messages and web pages to convey emotional cues or supplement textual communication (Peng et al., 2023). They represent an evolution from emoticons, offering a more visually expressive and nuanced way to communicate emotions and meanings, including complex or serious contexts (Zhou et al., 2025). They are considered part of the grammatical elements of digital language and have become a necessary component of online communication for many (Klein, Aydin and West, 2024).
+
+### References
+- **Peng2023**: Letian Peng, ZilongWang, Hang Liu, ZihanWang, Jingbo Shang (2023). *EmojiLM: Modeling the New Emoji Language*. [Link](https://arxiv.org/abs/2311.01751)
+- **Zhou2025**: Yuhang Zhou, Paiheng Xu, Xiyao Wang, Xuan Lu, Ge Gao, Wei Ai (2025). *Emojis Decoded: Leveraging ChatGPT for Enhanced Understanding in Social Media Communications*. [Link](https://arxiv.org/abs/2402.01681)
+- **Klein2024**: Lars Klein, Roland Aydin, Robert West (2024). *Emojinize: Enriching Any Text with Emoji Translations*. [Link](https://arxiv.org/abs/2403.03857)",Klein2024|Peng2023|Chen2024|Zhou2025|Zappavigna2025,14.23,deepseek-r1
+2026-02-20 01:19:21,How are emojis used in LLMs?,"Emojis are used in LLMs to trigger harmful or toxic content generation, as they can bypass safety mechanisms and convey complex meanings, including hate speech and oppression. (Cui et al., 2025)
+
+### References
+- **Cui2025**: Shiyao Cui, Xijia Feng, Yingkang Wang, Junxiao Yang, Zhexin Zhang, Biplab Sikdar, Hongning Wang, Han Qiu, Minlie Huang (2025). *When Smiley Turns Hostile: Interpreting How Emojis Trigger LLMs’ Toxicity*. [Link](https://arxiv.org/abs/2509.11141)",Cui2025|Zhou2025|Zappavigna2025,14.19,deepseek-r1
+2026-02-20 01:20:21,How does 'EmojiPrompt' obfuscate private data in cloud-based LLM interactions?,"EmojiPrompt obfuscates private data by using a generative transformation performed by an LLM (LLMO) to convert private data into a form that mixes linguistic elements (e.g., abbreviations) and non-linguistic elements (e.g., emojis, emoticons, mathematical operators). This process adheres to a task-specific obfuscation instruction and is defined as LLMO(ot) = x′, where x′ is the obfuscated text (Lin et al., 2025). The obfuscation employs an atomic-level strategy, breaking down private data into smaller units and obfuscating each individually, with two types (Reusable and Non-Reusable) tailored to different data patterns (Lin et al., 2025).
+
+### References
+- **Lin2025**: Sam Lin, Wenyue Hua, Zhenting Wang, Mingyu Jin, Lizhou Fan, Yongfeng Zhang (2025). *EmojiPrompt: Generative Prompt Obfuscation for Privacy-Preserving Communication with Cloud-based LLMs*. [Link](https://arxiv.org/abs/2402.05868)",Lin2025,22.37,deepseek-r1
+2026-02-20 01:22:00,What is 'EmojiLM' and how was the Text2Emoji corpus created?,"EmojiLM is a model trained on the Text2Emoji parallel corpus, which was constructed using large language models (LLMs) to translate English text into emojis (Peng et al., 2023).
+
+### References
+- **Peng2023**: Letian Peng, ZilongWang, Hang Liu, ZihanWang, Jingbo Shang (2023). *EmojiLM: Modeling the New Emoji Language*. [Link](https://arxiv.org/abs/2311.01751)",Peng2023|Zappavigna2025,13.05,deepseek-r1
+2026-02-20 01:22:43,What method does Zhang (2025) introduce in 'Emoti-Attack'?,"Zhang (2025) introduces **Emoji-Attack**, a novel adversarial attack method that leverages emoji manipulation to create subtle perturbations in text, achieving zero-perturbation attacks on NLP systems (Zhang, 2025).
+
+### References
+- **Zhang2025**: Yangshijie Zhang (2025). *Emoti-Attack: Zero-Perturbation Adversarial Attacks on NLP Systems via Emoji Sequences*. [Link](https://arxiv.org/abs/2502.17392v1)",Zhang2025|Zhang2024|Lyu2024|Gopinadh2026|Cui2025|Qiu2024|Grover2025|Huang2025|Zappavigna2025,32.97,deepseek-r1

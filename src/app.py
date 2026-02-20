@@ -33,6 +33,8 @@ if "last_docs" not in st.session_state:
     st.session_state.last_docs = []
 if "last_query" not in st.session_state:
     st.session_state.last_query = ""
+if "query_history" not in st.session_state:
+    st.session_state.query_history = []
 
 llm = ChatOllama(model=LLM_MODEL, temperature=0)
 
@@ -76,21 +78,26 @@ def generate_bibtex():
             bibtex_str += f"@article{{{s_id},\n  author = {{{authors}}},\n  title = {{{title}}},\n  year = {{{year}}},\n  journal = {{{venue}}}\n}}\n\n"
     return bibtex_str
 
-def create_knowledge_graph(docs, query):
+def create_knowledge_graph(history_list):
     G = nx.Graph()
-    G.add_node(query, size=20, color='#ef4444', type='query')
     
-    for d in docs:
-        s_id = d.metadata.get('source_id', 'Unknown')
-        authors = d.metadata.get('authors', 'Unknown')
-        G.add_node(s_id, size=15, color='#3b82f6', type='source')
-        G.add_edge(query, s_id)
+    for item in history_list:
+        query = item['query']
+        docs = item['docs']
         
-        for author in [a.strip() for a in authors.split(',')]:
-            if author:
-                G.add_node(author, size=10, color='#10b981', type='author')
-                G.add_edge(s_id, author)
-                
+        G.add_node(query, size=20, color='#ef4444', type='query')
+        
+        for d in docs:
+            s_id = d.metadata.get('source_id', 'Unknown')
+            authors = d.metadata.get('authors', 'Unknown')
+            G.add_node(s_id, size=15, color='#3b82f6', type='source')
+            G.add_edge(query, s_id)
+            
+            for author in [a.strip() for a in authors.split(',')]:
+                if author:
+                    G.add_node(author, size=10, color='#10b981', type='author')
+                    G.add_edge(s_id, author)
+                    
     pos = nx.spring_layout(G, k=0.5, iterations=50)
     
     edge_x, edge_y = [], []
@@ -131,7 +138,7 @@ with st.sidebar:
     
     st.markdown("### Export Capabilities")
     
-    chat_md = "\n\n".join([f"**{m['role'].capitalize()}**: {m['content']}" for m in st.session_state.messages]) if st.session_state.messages else "No conversation history yet."
+    chat_md = "\n\n".join([f"**{m['role'].capitalize()}**: {m['content']}" for m in reversed(st.session_state.messages)]) if st.session_state.messages else "No conversation history yet."
     
     st.download_button(
         label="Export Thread (Markdown)", 
@@ -154,7 +161,7 @@ with st.sidebar:
                 ctx = "\n\n".join([f"[{d.metadata.get('source_id')}]: {d.page_content}" for d in st.session_state.last_docs])
                 raw_artifact = artifact_chain.invoke({"context": ctx, "artifact_type": artifact_type}).content
                 clean_artifact = re.sub(r'<think>.*?</think>', '', raw_artifact, flags=re.DOTALL).strip()
-                st.session_state.messages.append({"role": "assistant", "content": f"**Generated Artifact: {artifact_type}**\n\n{clean_artifact}"})
+                st.session_state.messages.insert(0, {"role": "assistant", "content": f"**Generated Artifact: {artifact_type}**\n\n{clean_artifact}"})
                 st.rerun()
         else:
             st.warning("Please run a query first to retrieve evidence for the artifact.")
@@ -164,68 +171,67 @@ st.title("Personal Research Portal")
 tab_chat, tab_graph, tab_gaps = st.tabs(["💬 Synthesis Chat", "🕸️ Knowledge Graph", "🔍 Gap Finder"])
 
 with tab_chat:
+    with st.form(key="query_form", clear_on_submit=True):
+        prompt = st.text_input("Enter your main research question...")
+        submit_search = st.form_submit_button("Search")
+
+    if submit_search and prompt:
+        st.session_state.last_query = prompt
+        all_docs = []
+        
+        with st.spinner("Processing query..."):
+            start_time = time.time()
+            
+            if agentic_mode:
+                plan_raw = planner_chain.invoke({"question": prompt}).content
+                sub_queries = [q.strip() for q in plan_raw.split('|') if q.strip()]
+                for sq in sub_queries:
+                    docs = st.session_state.retriever.invoke(sq)
+                    all_docs.extend(docs)
+            else:
+                all_docs = st.session_state.retriever.invoke(prompt)
+
+            unique_docs = list({d.page_content: d for d in all_docs}.values())
+            st.session_state.last_docs = unique_docs
+            st.session_state.query_history.append({"query": prompt, "docs": unique_docs})
+            
+            if not unique_docs:
+                clean_output = "No relevant documents found."
+                source_ids = []
+            else:
+                context_text = "\n\n".join([f"[{d.metadata.get('source_id')}]: {d.page_content}" for d in unique_docs])
+                raw_response = chain.invoke({"context": context_text, "question": prompt}).content
+                final_output = format_citations(raw_response, unique_docs)
+                clean_output = re.sub(r'<think>.*?</think>', '', final_output, flags=re.DOTALL).strip()
+                
+                end_time = time.time()
+                source_ids = list(set([d.metadata.get('source_id', 'Unknown') for d in unique_docs]))
+                log_interaction(prompt, clean_output, source_ids, end_time - start_time)
+
+        st.session_state.messages.insert(0, {"role": "assistant", "content": clean_output, "docs": unique_docs})
+        st.session_state.messages.insert(0, {"role": "user", "content": prompt})
+        st.rerun()
+
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
-
-    if prompt := st.chat_input("Enter your main research question..."):
-        st.session_state.messages.append({"role": "user", "content": prompt})
-        st.session_state.last_query = prompt
-        
-        with st.chat_message("user"):
-            st.markdown(prompt)
-
-        with st.chat_message("assistant"):
-            start_time = time.time()
-            all_docs = []
-            
-            if agentic_mode:
-                with st.status("Running Agentic Research Loop...", expanded=True) as status:
-                    st.write("🧠 Planning sub-queries...")
-                    plan_raw = planner_chain.invoke({"question": prompt}).content
-                    sub_queries = [q.strip() for q in plan_raw.split('|') if q.strip()]
-                    
-                    for sq in sub_queries:
-                        st.write(f"🔎 Searching: *{sq}*")
-                        docs = st.session_state.retriever.invoke(sq)
-                        all_docs.extend(docs)
-                        
-                    st.write("📚 Synthesizing cross-source evidence...")
-                    status.update(label="Agentic Loop Complete!", state="complete", expanded=False)
-            else:
-                with st.spinner("Retrieving & Reranking..."):
-                    all_docs = st.session_state.retriever.invoke(prompt)
-
-            unique_docs = {d.page_content: d for d in all_docs}.values()
-            st.session_state.last_docs = list(unique_docs)
-            
-            if not unique_docs:
-                st.warning("No relevant documents found. Please adjust your query.")
-                st.session_state.messages.append({"role": "assistant", "content": "No relevant documents found."})
-            else:
-                context_text = "\n\n".join([f"[{d.metadata.get('source_id')}]: {d.page_content}" for d in unique_docs])
-                
-                with st.spinner("Generating rigorous response..."):
-                    raw_response = chain.invoke({"context": context_text, "question": prompt}).content
-                    final_output = format_citations(raw_response, list(unique_docs))
-                    clean_output = re.sub(r'<think>.*?</think>', '', final_output, flags=re.DOTALL).strip()
-                    
-                    st.markdown(clean_output)
-                    
-                    with st.expander(f"View Retrieved Evidence ({len(unique_docs)} chunks)"):
-                        for d in unique_docs:
-                            st.markdown(f"**[{d.metadata.get('source_id')}]**: {d.page_content[:250]}...")
-                    
-                    end_time = time.time()
-                    source_ids = list(set([d.metadata.get('source_id', 'Unknown') for d in unique_docs]))
-                    log_interaction(prompt, clean_output, source_ids, end_time - start_time)
-                    st.session_state.messages.append({"role": "assistant", "content": clean_output})
+            if message["role"] == "assistant" and message.get("docs"):
+                with st.expander(f"View Retrieved Evidence ({len(message['docs'])} chunks)"):
+                    for d in message["docs"]:
+                        st.markdown(f"**[{d.metadata.get('source_id')}]**: {d.page_content[:250]}...")
 
 with tab_graph:
     st.markdown("### Entity & Source Relationships")
-    if st.session_state.last_docs and st.session_state.last_query:
-        fig = create_knowledge_graph(st.session_state.last_docs, st.session_state.last_query)
-        st.plotly_chart(fig, width="stretch")
+    if st.session_state.query_history:
+        sub_tab_recent, sub_tab_cumulative = st.tabs(["Recent", "Cumulative"])
+        
+        with sub_tab_recent:
+            fig_recent = create_knowledge_graph([st.session_state.query_history[-1]])
+            st.plotly_chart(fig_recent, width="stretch")
+            
+        with sub_tab_cumulative:
+            fig_cumulative = create_knowledge_graph(st.session_state.query_history)
+            st.plotly_chart(fig_cumulative, width="stretch")
     else:
         st.info("Ask a question in the Synthesis Chat to generate a knowledge graph of the retrieved evidence.")
 
