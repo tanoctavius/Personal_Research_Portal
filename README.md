@@ -1,8 +1,8 @@
 # Personal Research Portal (Local RAG)
 
-**Iteration 2: Advanced Hybrid Research Suite**
+**Phase 3: Full-Stack Personal Research Portal Product**
 
-A local Retrieval-Augmented Generation (RAG) system that uses **DeepSeek-R1** and **Llama 3.2** to analyze research papers. It implements professional-grade retrieval techniques (Hybrid Search + Reranking) and runs entirely offline using Ollama.
+A local Retrieval-Augmented Generation (RAG) web application that uses **DeepSeek-R1** and **Llama 3.2** to analyze research papers. It wraps professional-grade retrieval techniques (Hybrid Search + Reranking) into a complete, interactive Streamlit UI featuring agentic research loops, automated artifact generation, and dynamic knowledge graph visualizations.
 
 ## Prerequisites
 
@@ -73,7 +73,7 @@ python ingest.py
 
 ```
 
-## Usage
+## Usage for terminal
 
 Run the main chat interface:
 
@@ -87,6 +87,35 @@ python rag_pipeline.py
 3. The AI will answer and provide citations in the format `(Paper, Chunk, In_text_citation)`.
 4. Toggle Reasoning: Type `toggle think` to show/hide DeepSeek's internal thought process.
 5. Type `quit` or `exit` to close the program.
+
+
+## Usage (UI)
+
+Launch the full-stack Research Portal interface:
+
+```bash
+streamlit run src/app.py
+
+Notes on UI: 
+The application is divided into five main tabs and a sidebar tool palette:
+
+1. 💬 Synthesis Chat: The main interface. Ask questions to retrieve evidence and generate cited responses. Toggle the "View AI Thought Process" expander to see DeepSeek-R1's internal reasoning.
+
+2. 🕸️ Knowledge Graph: Visualizes relationships between your research queries, source documents, and authors. Toggle between the "Recent" (last query only) and "Cumulative" (entire session) networks.
+
+3. 🔍 Gap Finder: Evaluates the retrieved context against your specific question to highlight missing information and suggests targeted evidence needed to resolve those gaps.
+
+4. 📊 Evaluation: View historical RAGAs metrics from your offline evaluation scripts, or run an on-the-fly evaluation using Llama 3.2 to grade the Faithfulness and Relevancy of your most recent chat interaction.
+
+5. ℹ️ Info: A system architecture breakdown and user guide.
+
+Sidebar Tools
+Enable Agentic Deep Loop: When toggled on, the system breaks complex questions into search-optimized sub-queries, executes parallel searches, and synthesizes a comprehensive final answer.
+
+Export Capabilities: Download your current chat thread as a Markdown file, or export your corpus metadata as a formatted BibTeX reference list.
+
+Artifact Generator: Automatically transform the evidence retrieved from your last query into formal academic structures (Evidence Tables, Annotated Bibliographies, or Synthesis Memos).
+
 
 Characteristics:
 1. Hybrid Search: Balances keyword accuracy (BM25) with semantic meaning (FAISS).
@@ -116,15 +145,31 @@ Uses Llama 3.2 to grade the cached answers against RAGAs metrics (Faithfulness a
 python evaluation.py
 ```
 
-## Stretch Goals Implemented
+## Stretch Goals Implemented (Phase 2)
 
-1. Hybrid Retrieval (BM25 + FAISS): Merges traditional search with vector embeddings to catch both technical terms and general concepts.
+1. **Hybrid Retrieval (BM25 + FAISS)**: Merges traditional search with vector embeddings to catch both technical terms and general concepts.
 
-2. Cross-Encoder Reranking: Utilizes ms-marco-MiniLM to re-rank the top 20 retrieved chunks down to the best 5.
+2. **Cross-Encoder Reranking**: Utilizes ms-marco-MiniLM to re-rank the top 20 retrieved chunks down to the best 5.
 
-3. Semantic Chunking: Breaks documents at logical semantic shifts using AI embeddings instead of arbitrary character counts.
+3. **Semantic Chunking**: Breaks documents at logical semantic shifts using AI embeddings instead of arbitrary character counts.
 
-4. Structured Citations: A custom post-processing loop that maps internal IDs to your manifest's in_text_citation column.
+4. **Structured Citations**: A custom post-processing loop that maps internal IDs to your manifest's in_text_citation column.
+
+## Stretch Goals Implemented (Phase 3)
+
+1. **Interactive Web Interface (Streamlit)**: Upgraded from a CLI script to a polished, multi-tab web portal with expandable evidence and reasoning traces.
+
+2. **Agentic Research Loop**: An autonomous planning step that decomposes complex user queries into parallel sub-queries for broader evidence retrieval before final synthesis.
+
+3. **Dynamic Knowledge Graph**: Uses `networkx` and `Plotly` to map out relationships between queries, source documents, and authors both for individual queries and cumulatively across a session.
+
+4. **Automated Gap Finding**: A dedicated LLM chain that specifically analyzes retrieved context to identify logical gaps and missing evidence required to fully answer the user's prompt.
+
+5. **Research Artifact Generation**: Prompt-engineered pipelines that instantly convert retrieved contexts into Evidence Tables, Annotated Bibliographies, and Synthesis Memos.
+
+6. **BibTeX Export**: A one-click utility to export the structured CSV metadata manifest into a standardized `.bib` format for reference managers.
+
+7. **On-Demand RAGAs Evaluation**: Integrated the RAGAs framework directly into the UI, allowing users to manually grade the Faithfulness and Answer Relevancy of their latest query without leaving the app.
 
 ## Project Structure
 
@@ -139,6 +184,8 @@ python evaluation.py
 │   ├── rag_logs.csv          # Interaction history
 │   ├── generation_cache.json # Cached answers for Eval
 │   └── evaluation_results.csv# Final RAGAs scores
+├── src/
+│   └── app.py                # Phase 3 Streamlit Web UI
 ├── ingest.py                 # Semantic + BM25 Ingestion
 ├── rag_pipeline.py           # Engine (Hybrid + Rerank + Logging)
 ├── generate_answers.py       # Eval Phase 1 (Generating)
