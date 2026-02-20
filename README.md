@@ -127,7 +127,7 @@ Characteristics:
 4. Production Logging: Every query, response, and latency metric is saved to logs/rag_logs.csv.
 
 
-## Advanced Evaluation (2-Step Checkpointing)
+Advanced Evaluation (2-Step Checkpointing)
 
 To handle the high latency of reasoning models, the evaluation is split into two phases. This allows us to generate answers once and grade them multiple times without re-running the LLM.
 
