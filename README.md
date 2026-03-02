@@ -95,6 +95,7 @@ Launch the full-stack Research Portal interface:
 
 ```bash
 streamlit run src/app.py
+```
 
 Notes on UI: 
 The application is divided into five main tabs and a sidebar tool palette:
