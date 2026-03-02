@@ -461,3 +461,7 @@ According to Chen et al. (2024):
 **Note:** While age and gender are established factors, the specific impact can vary depending on the type of emoji (e.g., happy vs. disgusted) and other mediating factors like familiarity [Chen et al. 2024].
 
 ### References",Zheng2025|Qiu2024|Chen2024|Zhou2025,37.30,deepseek-r1
+2026-03-01 19:45:36,What is the 'Emoji Attack' method proposed by Wei et al. (2025) and how does it affect Judge LLMs?,"The 'Emoji Attack' method proposed by Wei et al. (2025) exploits token segmentation bias in Judge LLMs to bypass harmful content detection. By inserting emojis into text, the attack alters tokenization, leading to embedding distortions that reduce detection accuracy and allow harmful content to be misclassified as safe (Wei, Liu and Erichson, 2025).
+
+### References
+- **Wei2025**: Zhipeng Wei, Yuqi Liu, Benjamin Erichson (2025). *Emoji Attack: Enhancing Jailbreak Attacks Against Judge LLM Detection*. [Link](https://arxiv.org/abs/2411.01077v5)",Cui2025|Wei2025,15.68,deepseek-r1
