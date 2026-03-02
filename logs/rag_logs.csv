@@ -385,3 +385,79 @@ However, the context does mention that Zheng2025 (2025) references Chen et al. (
 ### References
 - **Chen2024**: Yihua Chen, Xingchen Yang, Hannah Howman, Ruth Filik (2024). *Individual differences in emoji comprehension: Gender, age, and culture*. [Link](https://doi.org/10.1371/journal.pone.0297379)
 - **Zheng2025**: Yawen Zheng, Hanjia Lyu, Jiebo Luo (2025). *Irony in Emojis: A Comparative Study of Human and LLM Interpretation*. [Link](https://arxiv.org/abs/2501.11241)",Chen2024|Qiu2024|Zheng2025,33.71,deepseek-r1
+2026-03-01 17:11:03,What is the 'Emoji Attack' method proposed by Wei et al. (2025) and how does it affect Judge LLMs?,"**Agentic Research Plan Executed:**
+1. ""What is the Emoji Attack method?
+2. Who proposed the Emoji Attack method in 2025?
+3. How does the Emoji Attack method affect Judge LLMs?""
+
+---
+**Synthesis:**
+The **Emoji Attack** is a method proposed by Wei et al. (2025) to enhance jailbreak attacks against Judge LLMs by exploiting **token segmentation bias**. This bias occurs when emojis are inserted into text, altering tokenization patterns and disrupting contextual embeddings, which leads to misclassifications of harmful content as safe (Wei, Liu and Erichson, 2025).
+
+### Key aspects of the Emoji Attack:
+1. **Mechanism**:  
+   - The attack leverages emojis to induce significant embedding shifts in Judge LLMs due to their unique sub-token representations and semantic ambiguity. Unlike traditional delimiters (e.g., spaces), emojis introduce both tokenization changes and semantic meaning, making the attack more effective (Wei, Liu and Erichson, 2025).
+   - It uses **in-context learning** to systematically insert emojis into generated text before evaluation by a Judge LLM, distorting the embedding space to evade detection (Wei, Liu and Erichson, 2025).
+
+2. **Effectiveness**:  
+   - Experiments demonstrate that the Emoji Attack significantly reduces unsafe prediction rates across multiple Judge LLMs (e.g., Llama Guard, ShieldLM, GPT-4). For instance, it reduced the unsafe rate for ShieldLM from 38.5% to 3.5% compared to a baseline jailbreak method (Wei, Liu and Erichson, 2025).
+   - The attack is lightweight, does not require extensive optimization, and can be integrated with existing jailbreak techniques, making it a practical tool for bypassing content moderation (Wei, Liu and Erichson, 2025).
+
+### Impact on Judge LLMs:
+- The attack exploits vulnerabilities in token segmentation, causing Judge LLMs to misclassify harmful content as safe due to disrupted embeddings and semantic ambiguity (Wei, Liu and Erichson, 2025).
+- This highlights the fragility of current content moderation systems and underscores the need for robust defenses against such tokenization-based attacks (Wei, Liu and Erichson, 2025).
+
+**Reference**: Wei et al. (2025). *Emoji Attack: Exploiting Token Segmentation Bias in Judge LLMs*.
+
+### References
+- **Wei2025**: Zhipeng Wei, Yuqi Liu, Benjamin Erichson (2025). *Emoji Attack: Enhancing Jailbreak Attacks Against Judge LLM Detection*. [Link](https://arxiv.org/abs/2411.01077v5)",Grover2025|Wei2025|Jiang2026,57.86,deepseek-r1
+2026-03-01 17:45:18,What is the 'Emoji Attack' method proposed by Wei et al. (2025) and how does it affect Judge LLMs?,"The 'Emoji Attack' method proposed by Wei et al. (2025) exploits token segmentation bias in Judge LLMs to bypass harmful content detection. By inserting emojis into text, the attack alters tokenization, leading to embedding distortions that reduce detection accuracy and allow harmful content to be misclassified as safe (Wei, Liu and Erichson, 2025).
+
+### References
+- **Wei2025**: Zhipeng Wei, Yuqi Liu, Benjamin Erichson (2025). *Emoji Attack: Enhancing Jailbreak Attacks Against Judge LLM Detection*. [Link](https://arxiv.org/abs/2411.01077v5)",Wei2025|Cui2025,16.68,deepseek-r1
+2026-03-01 17:45:56,What is the 'Emoji Attack' method proposed by Wei et al. (2025) and how does it affect Judge LLMs?,"**Agentic Research Plan Executed:**
+1. Emoji Attack Wei et al. 2025
+2. purpose of Emoji Attack
+3. effect of Emoji Attack on Judge LLMs
+
+---
+**Synthesis:**
+The 'Emoji Attack' method proposed by Wei et al. (2025) exploits token segmentation bias in Judge LLMs to evade content moderation. By inserting emojis into text, the attack induces significant embedding shifts due to emojis' unique sub-token representations, which disrupt contextual understanding and lead to misclassification of harmful content as safe (Wei, Liu and Erichson, 2025). This method combines with existing jailbreak techniques and uses in-context learning to manipulate tokenization, reducing unsafe prediction rates across tested Judge LLMs (Wei, Liu and Erichson, 2025).
+
+### References
+- **Wei2025**: Zhipeng Wei, Yuqi Liu, Benjamin Erichson (2025). *Emoji Attack: Enhancing Jailbreak Attacks Against Judge LLM Detection*. [Link](https://arxiv.org/abs/2411.01077v5)",Grover2025|Wei2025|Cui2025,24.28,deepseek-r1
+2026-03-01 17:47:39,What is the 'Emoji Attack' method proposed by Wei et al. (2025) and how does it affect Judge LLMs?,"**Agentic Research Plan Executed:**
+1. Emoji Attack Wei et al. 2025
+2. purpose of Emoji Attack
+3. effect of Emoji Attack on Judge LLMs
+
+---
+**Synthesis:**
+The 'Emoji Attack' method proposed by Wei et al. (2025) exploits token segmentation bias in Judge LLMs to evade content moderation. By inserting emojis into text, the attack induces significant embedding shifts due to emojis' unique sub-token representations, which disrupt contextual understanding and lead to misclassification of harmful content as safe (Wei, Liu and Erichson, 2025). This method combines with existing jailbreak techniques and uses in-context learning to manipulate tokenization, reducing unsafe prediction rates across tested Judge LLMs (Wei, Liu and Erichson, 2025).
+
+### References
+- **Wei2025**: Zhipeng Wei, Yuqi Liu, Benjamin Erichson (2025). *Emoji Attack: Enhancing Jailbreak Attacks Against Judge LLM Detection*. [Link](https://arxiv.org/abs/2411.01077v5)",Grover2025|Wei2025|Cui2025,24.00,deepseek-r1
+2026-03-01 17:52:29,What is 'EmojiLM' and how was the Text2Emoji corpus created?,"EmojiLM is a model evaluated using the Text2Emoji corpus (Peng et al., 2023). The Text2Emoji corpus was created by utilizing LLMs, with the exact mechanism hypothesized to be the LLM's understanding of emoji semantics and translation tasks (Peng et al., 2023).
+
+### References
+- **Peng2023**: Letian Peng, ZilongWang, Hang Liu, ZihanWang, Jingbo Shang (2023). *EmojiLM: Modeling the New Emoji Language*. [Link](https://arxiv.org/abs/2311.01751)",Zappavigna2025|Peng2023,14.32,deepseek-r1
+2026-03-01 17:54:35,What is the 'Emoji Attack' method proposed by Wei et al. (2025) and how does it affect Judge LLMs?,"The 'Emoji Attack' method proposed by Wei et al. (2025) exploits token segmentation bias in Judge LLMs to bypass harmful content detection. Specifically, it leverages in-context learning to systematically insert emojis into text, inducing embedding distortions that alter how the text is tokenized and understood by the Judge LLM. This distortion reduces detection accuracy, enabling harmful content to evade moderation (Wei, Liu and Erichson, 2025).
+
+### References
+- **Wei2025**: Zhipeng Wei, Yuqi Liu, Benjamin Erichson (2025). *Emoji Attack: Enhancing Jailbreak Attacks Against Judge LLM Detection*. [Link](https://arxiv.org/abs/2411.01077v5)",Wei2025|Cui2025,14.25,deepseek-r1
+2026-03-01 17:58:52,"According to Chen et al. (2024), how do gender and age influence emoji comprehension?","**Agentic Research Plan Executed:**
+1. Chen et al. 2024 emoji comprehension
+2. gender influence emoji comprehension
+3. age influence emoji comprehension
+
+---
+**Synthesis:**
+According to Chen et al. (2024):
+
+1.  **Gender Influence**: Women demonstrated higher accuracy in classifying emoji representing facial emotional expressions compared to men. This effect was statistically significant across most emoji types, although no significant gender differences were found for the recognition of 'surprised' or 'disgusted' emojis [Chen et al. 2024].
+
+2.  **Age Influence**: Younger participants generally exhibited higher accuracy in emoji classification tasks. This effect was statistically significant for emojis representing 'surprised', 'fearful', 'sad', and 'angry' emotions. Furthermore, younger individuals often show more advanced skills in interpreting nuanced uses of emojis, such as sarcasm and irony [Chen et al. 2024; Zheng2025].
+
+**Note:** While age and gender are established factors, the specific impact can vary depending on the type of emoji (e.g., happy vs. disgusted) and other mediating factors like familiarity [Chen et al. 2024].
+
+### References",Zheng2025|Qiu2024|Chen2024|Zhou2025,37.30,deepseek-r1
